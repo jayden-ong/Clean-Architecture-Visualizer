@@ -1,4 +1,15 @@
 frontend/src/
+├── i18n/                   # i18n configuration
+│   ├── config.ts           # i18next initialization & plugin setup
+│   └── locales/            # Translation JSON files
+│       ├── en/
+│       │   ├── common.json     # "Refresh", "Home", "Logo Alt Text"
+│       │   ├── learning.json   # CA definitions (e.g., Controller, Entities) 
+│       │   └── checker.json    # "Violations Detected", "Suggestions" 
+│       └── fr/                 # Future support for other languages
+│           └── ...
+│       └── cn/                 
+│           └── ...
 ├── api/                    # API service layer
 │   ├── apiClient.ts        # Axios instance
 │   ├── analysis.api.ts     # Triggers codebase scan & returns violations
@@ -40,6 +51,9 @@ frontend/src/
 │   └── theme.ts            # UI styling
 │
 ├── utils/
-│   ├── diagramHelpers.ts   # Logic to dim nodes on click
-│   └── pathUtils.ts        # Mapping Java packages to CA layers
-└── assets/                 # SVGs for Legend icons, our logo
+│   ├── diagramHelpers.ts   
+│   ├── pathUtils.ts        
+│   └── i18nHelpers.ts      # Helpers for switching locales or formatting
+└── assets/                 
+    ├── locales/            # 
+    └── react.svg
