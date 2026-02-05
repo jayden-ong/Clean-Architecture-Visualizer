@@ -14,7 +14,7 @@
     "url": "https://github.com/paulgries/Clean-Architecture-Visualizer/issues"
   },
   "bin": {
-    "test-cli": "./src/app/index.ts"
+    "cave": "./src/app/index.ts"
   },
   "devDependencies": {
     "jest": "^30.2.0"
