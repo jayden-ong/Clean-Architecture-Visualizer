@@ -1,5 +1,5 @@
 {
-  "filePath": "/Users/vithushon/Desktop/UofT Second Degree Master Folder/Semesters/10 - Winter 2026/CSC494/repo/Clean-Architecture-Visualizer/clean-architecture-visualizer/src/helloworld.java",
+  "filePath": "",
   "content": "public class helloworld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n    }\n}",
   "error": null
 }
