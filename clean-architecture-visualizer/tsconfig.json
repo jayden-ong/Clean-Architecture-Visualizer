@@ -30,10 +30,10 @@
     "exactOptionalPropertyTypes": true,
 
     // Style Options
-    // "noImplicitReturns": true,
+    "noImplicitReturns": true,
     // "noImplicitOverride": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
 
@@ -44,6 +44,7 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
   }
 }
