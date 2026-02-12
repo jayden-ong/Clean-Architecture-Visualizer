@@ -9,6 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.7",
+    "@mui/material": "^7.3.7",
     "i18next": "^25.8.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -17,10 +21,12 @@
     "reactflow": "^11.11.4"
   },
   "devDependencies": {
+    "@types/node": "^25.2.3",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
     "typescript": "~5.6.2",
-    "vite": "^5.4.10"
+    "vite": "^5.4.10",
+    "vite-plugin-svgr": "^4.5.0"
   }
 }
