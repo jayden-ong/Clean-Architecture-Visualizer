@@ -12,12 +12,17 @@ import SearchIcon from '@mui/icons-material/Search';
 import CircularProgress from '@mui/material/CircularProgress';
 import { HomeIcon, InfoIcon, CheckCircleIcon, ErrorIcon } from '../assets/icons';
 import { useAnalysisSummary } from '../actions/useAnalysis';
+import { AnalysisSummary, UseCase, Interaction } from '../lib/types';
 
 const CheckerMode: React.FC = () => {
     const { t } = useTranslation('checker');
     const [search, setSearch] = useState('');
 
-    const { data, isLoading, isError } = useAnalysisSummary();
+    const { data, isLoading, isError } = useAnalysisSummary() as { 
+        data: AnalysisSummary | undefined, 
+        isLoading: boolean, 
+        isError: boolean 
+    };
 
     if (isLoading) {
         return (
@@ -31,19 +36,18 @@ const CheckerMode: React.FC = () => {
         return <div style={{ textAlign: 'center', marginTop: 50 }}>Error loading analysis data.</div>;
     }
     const filteredUseCases = data.use_cases
-        .map((uc: any) => ({
+        .map((uc: UseCase) => ({
             ...uc,
-            interactions: (uc.interactions || []).filter((i: any) =>
+            interactions: (uc.interactions || []).filter((i: Interaction) =>
                 i.interaction_name.toLowerCase().includes(search.toLowerCase())
             ),
         }))
         .filter(
-            (uc: any) =>
+            (uc) =>
                 uc.name.toLowerCase().includes(search.toLowerCase()) ||
                 uc.interactions.length > 0 ||
                 search === ''
         );
-
     return (
         <div
             style={{
@@ -104,7 +108,7 @@ const CheckerMode: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                {filteredUseCases.map((useCase: any) => (
+                {filteredUseCases.map((useCase: UseCase) => (
                     <Accordion
                         key={useCase.id}
                         sx={{ mb: 2, borderRadius: 2, width: '100%', maxWidth: 600 }}
@@ -124,11 +128,11 @@ const CheckerMode: React.FC = () => {
                             </div>
                         </AccordionSummary>
                         <AccordionDetails>
-                            {useCase.interactions.length === 0 ? (
+                            {(useCase.interactions ?? []).length === 0 ? (
                                 <span style={{ color: '#888', fontStyle: 'italic' }}>{t('noInteractions')}</span>
                             ) : (
                                 <ul style={{ margin: 0, paddingLeft: 18 }}>
-                                    {useCase.interactions.map((interaction: any) => (
+                                    {(useCase.interactions ?? []).map((interaction: Interaction) => (
                                         <li key={interaction.interaction_id} style={{ margin: '8px 0' }}>
                                             <Link
                                                 to={`/use-case/${encodeURIComponent(useCase.name)}/interaction/${interaction.interaction_id}`}
