@@ -1,14 +1,16 @@
 #!/usr/bin/env npx tsx
 import { Command } from "commander";
-import * as packageJson from "../../package.json" with { type: "json" };
-import { sayHello } from "../test.js";
+import { sayHello } from "../lib/test.js";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import chalk from "chalk";
 import { exec, spawn, spawnSync } from "child_process";
 
+// Load package.json synchronously for compatibility with compiled output
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const packageJsonPath = path.resolve(__dirname, "../../package.json");
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
 const JAVA_VIEWER_DIR = path.resolve(__dirname, "../../java-viewer");
 const PAYLOAD_PATH = path.join(
   JAVA_VIEWER_DIR,
@@ -19,7 +21,7 @@ const VIEWER_PORT = 5173;
 
 const program = new Command();
 
-program.version(packageJson.default.version);
+program.version(packageJson.version);
 
 program
   .command("say-hello")
