@@ -1,14 +1,11 @@
 {
   "name": "clean-architecture-visualizer",
   "version": "1.0.0",
-  "description": "",
   "scripts": {
     "build": "tsc && npm run build_frontend",
     "build_frontend": "cd frontend && npm install && npm run build",
     "start": "node ./dist/app/index.js"
   },
-  "keywords": [],
-  "author": "",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/paulgries/Clean-Architecture-Visualizer/issues"

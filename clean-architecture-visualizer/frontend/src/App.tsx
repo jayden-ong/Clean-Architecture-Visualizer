@@ -14,7 +14,7 @@ function escapeHtml(text: string): string {
     .replace(/"/g, "&quot;");
 }
 
-function highlightJavaFunctions(escapedContent: string): string {
+function highlightSourceFunctions(escapedContent: string): string {
   return escapedContent.replace(
     /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/g,
     (_, functionName) => `<span>${functionName}</span>(`,
@@ -82,10 +82,10 @@ function App() {
   }
 
   const escaped = escapeHtml(data.content);
-  const highlighted = highlightJavaFunctions(escaped);
+  const highlighted = highlightSourceFunctions(escaped);
   const title = data.filePath
     ? data.filePath.replace(/^.*[/\\]/, "")
-    : "Java file";
+    : "source file";
 
   return (
     <div>
