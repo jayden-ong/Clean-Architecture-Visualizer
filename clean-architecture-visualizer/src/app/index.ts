@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { sayHello } from "../lib/test.js";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -24,15 +23,8 @@ const program = new Command();
 program.version(packageJson.version);
 
 program
-  .command("say-hello")
-  .description("A simple CLI tool to say hello")
-  .action(() => {
-    sayHello();
-  });
-
-program
   .command("init")
-  .description("Install java-viewer dependencies (npm install in java-viewer)")
+  .description("Install front-end dependencies (npm install in frontend)")
   .action(() => {
     const isWindows = process.platform === "win32";
     const npmCmd = isWindows ? "npm.cmd" : "npm";
@@ -42,10 +34,10 @@ program
       shell: isWindows,
     });
     if (result.status !== 0) {
-      console.error(chalk.red("java-viewer install failed"));
+      console.error(chalk.red("frontend install failed"));
       process.exitCode = 1;
     } else {
-      console.log(chalk.green("java-viewer dependencies installed"));
+      console.log(chalk.green("frontend dependencies installed"));
     }
   });
 
@@ -89,6 +81,7 @@ program
         cwd: JAVA_VIEWER_DIR,
         stdio: "inherit",
         shell: isWindows,
+        windowsHide: true,
       });
 
       devProcess.on("error", (err) => {
