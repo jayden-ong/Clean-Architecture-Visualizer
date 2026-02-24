@@ -1,5 +1,5 @@
 {
-  "exclude": ["node_modules", "frontend", "dist"],
+  "exclude": ["node_modules", "frontend", "dist", "tests"],
   "compilerOptions": {
     // File Layout
     "rootDir": ".",
