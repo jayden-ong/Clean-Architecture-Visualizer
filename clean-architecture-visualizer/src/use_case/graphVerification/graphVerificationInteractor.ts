@@ -34,7 +34,7 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
         await this.buildUseCaseGraphs();
         await this.developOutNeighbours();
         await this.verifyOutNeighbours();
-        this.populateDatabase();
+        await this.populateDatabase();
     }
 
     /**
@@ -168,7 +168,7 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
         }
     }
 
-    private populateDatabase(): void {
+    private async populateDatabase(): Promise<void> {
         const totalUseCases = this.useCaseGraphList.length;
         let violationCount = 0;
 
@@ -179,5 +179,6 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
         this.db.setNumUseCases(totalUseCases);
         this.db.setNumViolations(violationCount);
         this.db.setUseCases(this.useCaseGraphList);
+        this.db.setProjectName(await this.fileAccess.getProjectName());
     }
 }

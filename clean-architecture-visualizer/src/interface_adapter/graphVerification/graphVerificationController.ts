@@ -2,10 +2,10 @@ import type { GraphVerificationInputBoundary } from "../../use_case/graphVerific
 
 export class GraphVerificationController {
     constructor(
-        private readonly _inputBoundary: GraphVerificationInputBoundary
+        private readonly inputBoundary: GraphVerificationInputBoundary
     ) {}
 
     async execute(): Promise<void> {
-        this._inputBoundary.execute();
+        this.inputBoundary.execute();
     }
 }

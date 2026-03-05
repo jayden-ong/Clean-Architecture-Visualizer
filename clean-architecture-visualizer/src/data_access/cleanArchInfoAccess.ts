@@ -13,7 +13,7 @@ export class CleanArchAccess implements CleanArchInfoAccessInterface {
         return Promise.resolve(outNeighboursOnly as Record<cleanNode, cleanNode[]>);
     }
 
-    getLearningModeInfo(): Promise<Record<cleanNode, string>> {
+    getNodeInfo(): Promise<Record<cleanNode, string>> {
         const cleanNodeLearningInfo = Object.fromEntries(
             Object.entries(cleanNodeInfo.nodes).map(([key, value]) => [key, value.nodeDescription])
         );

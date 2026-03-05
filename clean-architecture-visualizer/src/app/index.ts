@@ -20,14 +20,17 @@ const VIEWER_PORT = 5173;
 import { AppBuilder } from './appBuilder.js';
 import { FileAccess } from '../data_access/fileAccess.js';
 import { CleanArchAccess } from '../data_access/cleanArchInfoAccess.js';
+import { SessionDBAccess } from "../data_access/sessionDBAccess.js";
 import { GraphVerificationController } from '../interface_adapter/graphVerification/graphVerificationController.js';
 import { GraphVerificationInteractor } from '../use_case/graphVerification/graphVerificationInteractor.js';
+import { startServer } from "../server/server.js";
 
 const program = new Command();
 
 const app = new AppBuilder()
   .withFileAccess(new FileAccess())
-  .withValidOutNeighbourAccess(new CleanArchAccess())
+  .withCleanArchAccess(new CleanArchAccess())
+  .withSessionDBAccess(new SessionDBAccess())
   .buildGraphVerificationInteractor(GraphVerificationInteractor)
   .buildGraphVerificationController(GraphVerificationController)
 
@@ -136,9 +139,18 @@ program
   });
 
 program
+  .command('start')
+  .description('start the express server to listen for requests')
+  .action(async() => {
+    app.runGraphVerification();
+    startServer();
+  })
+
+program
   .command('verify')
   .description('Verify whether the use cases found in child directories adhere to Clean Architeccture')
   .action(async() => {
     app.runGraphVerification();
   })
+
 program.parse(process.argv);
