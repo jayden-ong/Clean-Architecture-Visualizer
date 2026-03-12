@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Header from '../components/common/Header';
+import { CADiagram } from '../components/diagram';
 
 const UseCaseInteractionDiagram: React.FC = () => {
     const { useCaseId, interactionId } = useParams();
@@ -14,6 +15,7 @@ const UseCaseInteractionDiagram: React.FC = () => {
                             ? `Diagram for Use Case ${useCaseId}, Interaction ${interactionId}`
                             : 'Explore the use case interactions and their code implementations.'}
                     </p>
+                    <CADiagram />
                     <Link
                         to={useCaseId && interactionId
                             ? `/use-case/${useCaseId}/interaction/${interactionId}/code`

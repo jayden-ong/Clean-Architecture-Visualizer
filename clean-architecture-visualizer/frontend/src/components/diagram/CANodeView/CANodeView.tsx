@@ -1,38 +1,23 @@
-import { Paper, Typography } from '@mui/material';
-import { mapNodeToVisual } from './mapNodeToVisual';
+import { Typography } from '@mui/material';
+import { NodePaper, type LayerColor } from './CANodeView.styles';
 import type { CANode } from '../../../lib/types';
 
-/**
- * Renders a visual representation of a Clean Architecture node.
- * 
- * @param props - The component props
- * @param props.node - The CANode data to be displayed
- * @returns A Material-UI Paper component displaying the node with layer-specific styling
- * 
- * @example
- * ```tsx
- * <CANode node={myCANode} />
- * ```
- */
-export function CANodeView({ node }: { node: CANode }) {
-  const visual = mapNodeToVisual(node);
+const layerColorMap: Record<CANode['layer'], LayerColor> = {
+  EnterpriseBusinessRules: 'entities',
+  ApplicationBusinessRules: 'useCases',
+  InterfaceAdapters: 'adapters',
+  Frameworks: 'drivers',
+};
+
+export function CANodeView(nodeObject: CANode) {
+  const title = nodeObject.name ?? nodeObject.id;
+  const layerColor = layerColorMap[nodeObject.layer];
 
   return (
-    <Paper
-      sx={{
-        m: 2,
-        backgroundColor: `${visual.layerColor}.main`,
-        border: 2,
-        borderColor: `${visual.layerColor}.contrastText`,
-        color: `${visual.layerColor}.contrastText`,
-        px: 2,
-        py: 1,
-        ...visual.statusStyle,
-      }}
-    >
+    <NodePaper layerColor={layerColor} status={nodeObject.status}>
       <Typography variant="body1" align="center" fontWeight="bold">
-        {visual.title}
+        {title}
       </Typography>
-    </Paper>
+    </NodePaper>
   );
 }
