@@ -1,28 +1,40 @@
 import { styled } from '@mui/material/styles';
 
-export const TreeRow = styled('div')<{
+interface NodeContainerProps {
+  isActive?: boolean;
   depth: number;
-  isActive: boolean;
-}>(({ theme, depth, isActive }) => ({
-  paddingLeft: depth * 16,
+}
+
+export const NodeContainer = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'isActive' && prop !== 'depth',
+})<NodeContainerProps>(({ isActive, depth, theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  cursor: 'pointer',
-  paddingTop: 4,
-  paddingBottom: 4,
+  paddingTop: 6,
+  paddingBottom: 6,
+  paddingLeft: depth * 16 + 12,
+  paddingRight: 12,
+  marginRight: 8,
+  borderRadius: '0 20px 20px 0',
   fontWeight: isActive ? 600 : 400,
-  backgroundColor: isActive
-    ? theme.palette.action.selected
-    : 'transparent',
+  cursor: 'pointer',
+  backgroundColor: isActive ? theme.palette.primary.light : 'transparent',
+  color: isActive ? theme.palette.primary.dark : theme.palette.text.secondary,
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover,
+  },
+  transition: 'all 0.15s ease-in-out',
 }));
 
-export const ExpandIcon = styled('span')({
-  width: 16,
+export const ExpandIconWrapper = styled('span')({
+  display: 'flex',
+  alignItems: 'center',
+  width: 20,
 });
 
 export const NodeLabel = styled('span')({
   marginLeft: 4,
   display: 'flex',
   alignItems: 'center',
-  gap: 4,
+  gap: 8,
 });

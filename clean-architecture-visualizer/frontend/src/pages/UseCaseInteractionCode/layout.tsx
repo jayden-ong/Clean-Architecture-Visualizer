@@ -13,7 +13,9 @@ export const Workspace = styled(Box)({
   overflow: 'hidden',
 });
 
-export const SidebarContainer = styled('aside')<{
+export const SidebarContainer = styled('aside', {
+  shouldForwardProp: (prop) => prop !== 'sidebarWidth',
+})<{
   sidebarWidth: number;
 }>(({ theme, sidebarWidth }) => ({
   width: sidebarWidth,

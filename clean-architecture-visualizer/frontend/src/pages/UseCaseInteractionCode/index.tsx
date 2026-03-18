@@ -10,7 +10,7 @@ import {
   Resizer,
   MainViewContainer,
 } from './layout';
-import { useResizableSidebar } from './useResizeableSidebar.tsx';
+import { useResizableSidebar } from './useResizableSidebar.tsx';
 import { CtaButton } from '../../components/common/Button.tsx';
 import { Box } from '@mui/material';
 

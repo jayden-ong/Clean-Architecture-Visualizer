@@ -49,7 +49,7 @@ export const FileExplorer = ({ onSelect, activeFilePath }: FileExplorerProps) =>
 
   return (
     <div>
-      {fileTree?.children.map((node: FileNode) => (
+      {fileTree?.children?.map((node: FileNode) => (
         <TreeNode
           key={node.id}
           node={node}
