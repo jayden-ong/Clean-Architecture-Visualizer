@@ -2,7 +2,7 @@ import type { SessionDBAccessInterface } from "../../data_access/sessionDBAccess
 import type { FileAccessInterface } from "../../data_access/fileAccessInterface.js";
 import type { cleanLayer } from "../../types/cleanLayer.js";
 import type { GetRelationsInputData } from "./GetRelationsInputData.js";
-import type { GetRelationsInputBoundary } from "./GetRelationsInputInteractor.js";
+import type { GetRelationsInputBoundary } from "./GetRelationsInputBoundary.js";
 import type { GetRelationsOutputData } from "./GetRelationsOutputData.js";
 
 export type FileRelationsResponse = {
