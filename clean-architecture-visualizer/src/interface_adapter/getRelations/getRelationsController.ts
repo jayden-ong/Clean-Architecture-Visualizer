@@ -5,7 +5,7 @@ export class GetRelationsController {
             private readonly inputBoundary: GetRelationsInputBoundary
         ) {}
     
-    execute(): void {
-        this.inputBoundary.execute();
+    async execute(): Promise<void> {
+        await this.inputBoundary.execute();
     }
 }

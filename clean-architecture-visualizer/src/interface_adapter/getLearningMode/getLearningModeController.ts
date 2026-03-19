@@ -5,7 +5,7 @@ export class GetLearningModeController {
             private readonly inputBoundary: GetLearningModeInputBoundary
         ) {}
     
-    getLearningMode(): void {
-        this.inputBoundary.getLearningMode();
+    async getLearningMode(): Promise<void> {
+        await this.inputBoundary.getLearningMode();
     }
 }

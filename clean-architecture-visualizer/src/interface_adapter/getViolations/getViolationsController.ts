@@ -5,7 +5,7 @@ export class GetViolationsController {
             private readonly inputBoundary: GetViolationsInputBoundary
         ) {}
     
-    execute(): void {
-        this.inputBoundary.execute();
+    async execute(): Promise<void> {
+        await this.inputBoundary.execute();
     }
 }

@@ -5,7 +5,7 @@ export class GetProjectSummaryController {
             private readonly inputBoundary: GetProjectSummaryInputBoundary
         ) {}
     
-    execute(): void {
-        this.inputBoundary.getProjectSummary();
+    async execute(): Promise<void> {
+        await this.inputBoundary.getProjectSummary();
     }
 }

@@ -5,7 +5,7 @@ export class GetFileContentController {
             private readonly inputBoundary: GetFileContentInputBoundary
         ) {}
     
-    execute(): void {
+    async execute(): Promise<void> {
         this.inputBoundary.getFileContent();
     }
 }

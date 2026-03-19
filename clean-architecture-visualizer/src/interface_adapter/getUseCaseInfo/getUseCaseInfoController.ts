@@ -5,7 +5,7 @@ export class GetUseCaseInfoController {
             private readonly inputBoundary: GetUseCaseInfoInputBoundary
         ) {}
     
-    execute(): void {
-        this.inputBoundary.execute();
+    async execute(): Promise<void> {
+        await this.inputBoundary.execute();
     }
 }

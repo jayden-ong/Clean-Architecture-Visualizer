@@ -5,7 +5,7 @@ export class GetFileTreeController {
             private readonly inputBoundary: GetFileTreeInputBoundary
         ) {}
     
-    execute(): void {
+    async execute(): Promise<void> {
         this.inputBoundary.getFileTree();
     }
 }
