@@ -2,6 +2,8 @@ import type { SessionDBAccessInterface } from "../../data_access/sessionDBAccess
 import type { FileAccessInterface } from "../../data_access/fileAccessInterface.js";
 import type { cleanNode } from "../../types/cleanNode.js";
 import type { GetViolationsInputData } from "./GetViolationsInputData.js";
+import type { GetViolationsInputBoundary } from "./GetViolationsInputBoundary.js";
+import type { GetViolationsOutputData } from "./GetViolationsOutputData.js";
 
 export type ViolationResponse = {
     violations: ViolationEntry[];
@@ -23,15 +25,16 @@ type FileContext = {
     snippet?: string;
 };
 
-export class GetViolationsInteractor {
+export class GetViolationsInteractor implements GetViolationsInputBoundary {
 
     constructor(
         private readonly db: SessionDBAccessInterface,
         private readonly fileAccess: FileAccessInterface,
-        private readonly inputData:GetViolationsInputData
+        private readonly inputData: GetViolationsInputData,
+        private readonly outputData: GetViolationsOutputData
     ) {}
 
-    async execute(): Promise<ViolationResponse | undefined> {
+    async execute(): Promise<void> {
         const interactionId = this.inputData.getInteractionId();
 
         const useCase = this.db.getUseCaseById(interactionId);
@@ -41,7 +44,7 @@ export class GetViolationsInteractor {
             useCase.violationEdges.map(async ([from, to], index) => {
                 const edgeId = `${from}->${to}`;
                 const relatedNodeIds = this.resolveRelatedNodeIds(from, to, useCase.fileKeys);
-                const file_context = await this.resolveFileContext(from, to, useCase.fileKeys);
+                const fileContext = await this.resolveFileContext(from, to, useCase.fileKeys);
 
                 return {
                     id: `v-${index}`,
@@ -50,12 +53,12 @@ export class GetViolationsInteractor {
                     suggestion: "",
                     related_node_ids: relatedNodeIds,
                     related_edge_id: edgeId,
-                    file_context,
+                    file_context: fileContext,
                 };
             })
         );
 
-        return { violations };
+        this.outputData.setOutputData(violations);
     }
 
     /**

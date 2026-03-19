@@ -4,4 +4,6 @@ export interface FileAccessInterface {
     getFileImports(path: string): Promise<string[]>;
     getProjectName(): Promise<string>;
     getFileContent(path: string): Promise<string>;
+    getFileSnippet(filePath: string, target?: string): Promise<string | undefined>;
+    getLineNumber(filePath: string, target: string): Promise<number | undefined>;
 }

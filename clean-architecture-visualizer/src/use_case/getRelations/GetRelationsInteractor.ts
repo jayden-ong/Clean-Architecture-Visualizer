@@ -3,6 +3,7 @@ import type { FileAccessInterface } from "../../data_access/fileAccessInterface.
 import type { cleanLayer } from "../../types/cleanLayer.js";
 import type { GetRelationsInputData } from "./GetRelationsInputData.js";
 import type { GetRelationsInputBoundary } from "./GetRelationsInputInteractor.js";
+import type { GetRelationsOutputData } from "./GetRelationsOutputData.js";
 
 export type FileRelationsResponse = {
     file_path: string;
@@ -23,7 +24,8 @@ export class GetRelationsInteractor implements GetRelationsInputBoundary{
     constructor(
         private readonly db: SessionDBAccessInterface,
         private readonly fileAccess: FileAccessInterface,
-        private readonly inputData: GetRelationsInputData
+        private readonly inputData: GetRelationsInputData,
+        private readonly outputData: GetRelationsOutputData
     ) {}
 
     async execute(): Promise<void> {
@@ -81,7 +83,7 @@ export class GetRelationsInteractor implements GetRelationsInputBoundary{
             }
         }
 
-        // return { file_path: filePath, relations };
+        this.outputData.setOutputData({ file_path: filePath, relations: relations });
         return;
     }
 

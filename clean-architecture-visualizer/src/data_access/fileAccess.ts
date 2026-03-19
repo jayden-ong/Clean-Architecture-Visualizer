@@ -198,7 +198,7 @@ export class FileAccess implements FileAccessInterface {
      * @param target the name of the imported module to search for (e.g. "Database").
      * @returns the matching import line, or undefined if not found.
      */
-    async getFileSnippet(filePath: string, target?: string): Promise<string | undefined> {
+    async getFileSnippet(filePath: string, target: string): Promise<string | undefined> {
         const content = await this.getFileContent(filePath);
         if (!content) return undefined;
  

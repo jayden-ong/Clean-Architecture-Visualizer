@@ -1,4 +1,4 @@
-export class GetUseCaseInfoOutputData {
+export class GetRelationsOutputData {
 
     private apiOutputData?: { [key: string]: any }
 
