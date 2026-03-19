@@ -1,4 +1,4 @@
-import { jest, describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach } from '@jest/globals';
 import { GetUseCaseInfoInteractor } from "../../../src/use_case/getUseCaseInfo/getUseCaseInfoInteractor.js";
 import { SessionDBAccess } from "../../../src/data_access/sessionDBAccess.js";
 import type { GetUseCaseInfoInputData } from "../../../src/use_case/getUseCaseInfo/getUseCaseInfoInputData.js";

@@ -1,4 +1,4 @@
-import { GetRelationsInteractor } from "../../../src/use_case/getRelations/getRelationsInteractor.js";
+import { GetRelationsInteractor } from "../../../src/use_case/getRelations/GetRelationsInteractor.js";
 import { SessionDBAccess } from "../../../src/data_access/sessionDBAccess.js";
 import { FileAccess } from "../../../src/data_access/fileAccess.js";
 import type { GetRelationsInputData } from "../../../src/use_case/getRelations/GetRelationsInputData.js";
