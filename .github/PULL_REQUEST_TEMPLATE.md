@@ -1,3 +1,6 @@
+## Overview
+_(Brief overview (a few sentences) of what this PR achieves.)_
+
 ## Proposed Changes
 
 _(Describe your changes here. Also describe the motivation for your changes: what problem do they solve, or how do they improve the application or codebase? If this pull request fixes an open issue, [use a keyword to link this pull request to the issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword).)_
@@ -8,6 +11,10 @@ _(Describe your changes here. Also describe the motivation for your changes: wha
 <summary>Screenshots of your changes (if applicable)</summary>
 
 </details>
+
+## How to Test & Review
+
+_(Help your reviewer by providing clear instructions on how to verify your changes. Include specific commands, edge cases to watch out for, or UI navigation paths.)_
 
 ## Type of Change
 
@@ -38,12 +45,13 @@ Before opening your pull request:
     - This is **required** for all bug fixes and new features.
 - [ ] I have updated the project documentation, if applicable.
     - This is **required** for new features.
-- [ ] I have updated the project Changelog (this is required for all changes).
-
+- [ ] **(Frontend)** I have added/updated text in `i18n` JSON files for any new user-facing strings to support multilingual features.
 After opening your pull request:
 
 - [ ] I have verified that the CI tests have passed.
 - [ ] I have [requested a review](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/requesting-a-pull-request-review) from a project maintainer, and a fellow student.
+- [ ] Technical Debt: If temporary workarounds or "TODOs" were used, I have opened a tracking issue to address them properly.
+    - Linked Issues: 
 
 ## Questions and Comments
 
