@@ -159,4 +159,84 @@ export class FileAccess implements FileAccessInterface {
 
         return result;
     }
+
+    /**
+     * Get the project name, this is either the directory BEFORE "src", or if the 
+     * process is running in a directory ABOVE "src" we assume that we are in the 
+     * project directory.
+     * @returns a string representing the project name.
+     */
+    async getProjectName(): Promise<string> {
+        const currPath = process.cwd().split("/");
+        // returns the index of src if in currPath, else returns -1
+        const srcIndex = currPath.indexOf("src");
+        if (srcIndex == -1) return currPath[srcIndex];
+        return currPath[srcIndex - 1];
+    }
+
+    /**
+     * Get the file content of path as a single string.
+     * @param path is a path to a valid file
+     * @returns 
+     */
+    async getFileContent(path: string): Promise<string> {
+        
+        try {
+            const fileContent: string = await fs.readFile(path, { encoding: 'utf-8' });
+            return fileContent;
+        }
+        catch {
+            console.log("The file: " + path + " could not be found");
+            return "";
+        }
+    }
+
+    /**
+     * Find the first import line in a file that references the given target name,
+     * and return it as a snippet string.
+     * @param filePath is a path to a valid file.
+     * @param target the name of the imported module to search for (e.g. "Database").
+     * @returns the matching import line, or undefined if not found.
+     */
+    async getFileSnippet(filePath: string, target: string): Promise<string | undefined> {
+        const content = await this.getFileContent(filePath);
+        if (!content) return undefined;
+ 
+        const lines = content.split("\n");
+        const importLines = lines.filter(line => line.trimStart().startsWith("import "));
+ 
+        if (!target) {
+            // No target specified — return all import lines joined
+            return importLines.length > 0 ? importLines.join("\n") : undefined;
+        }
+ 
+        const match = importLines.find(line =>
+            line.toLowerCase().includes(target.toLowerCase())
+        );
+ 
+        return match?.trim() ?? undefined;
+    }
+ 
+    /**
+     * Find the 1-based line number of the first import line in a file that
+     * references the given target name.
+     * @param filePath is a path to a valid file.
+     * @param target the name of the imported module to search for (e.g. "Database").
+     * @returns the 1-based line number, or undefined if not found.
+     */
+    async getLineNumber(filePath: string, target: string): Promise<number | undefined> {
+        const content = await this.getFileContent(filePath);
+        if (!content) return undefined;
+ 
+        const lines = content.split("\n");
+ 
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (line.trimStart().startsWith("import ") && line.toLowerCase().includes(target.toLowerCase())) {
+                return i + 1; // 1-based line number
+            }
+        }
+ 
+        return undefined;
+    }
 }

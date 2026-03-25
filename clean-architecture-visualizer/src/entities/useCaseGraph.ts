@@ -95,4 +95,29 @@ export class useCaseGraph {
     resetViolations(): void {
         this.violationEdges = [];
     }
+
+    getNeighbourMap(): neighbourMap {
+        return this.outNeighbours;
+    }
+
+    /**
+     * Iterate through the outneighbour map and return a list of nodes that NEVER appear.
+     * That is a node's list is empty, and the node is never referenced by another node.
+     * 
+     * It is assumed that this use case graph's outneighbour map has been fully developed.
+     * 
+     * @returns a list of cleanNodes, those that are missing from this use case.
+     */
+    getMissingNodes(): cleanNode[] {
+        let verificationList = Object.keys(this.outNeighbours) as cleanNode[];
+
+        for (const [node, neighbours] of Object.entries(this.outNeighbours)) {
+            if (neighbours.length > 0) {
+                verificationList = verificationList.filter(n => n !== node);
+            }
+            verificationList = verificationList.filter(n => !neighbours.includes(n as cleanNode));
+        }
+
+        return verificationList;
+    }
 }
