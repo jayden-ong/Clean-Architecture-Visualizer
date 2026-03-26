@@ -3,8 +3,8 @@
 // the data it needs as props.
 
 import { Typography, Container, CircularProgress } from '@mui/material';
-import { useParams } from 'react-router-dom';
-import { CADiagramView } from './index';
+import { useLocation, useParams } from 'react-router-dom';
+import { CADiagramView } from './CADiagramView';
 import type { CANode, CAEdge, CAComponentType, CALayer } from '../../lib/types';
 import { useInteraction } from '../../actions/useAnalysis';
 
@@ -55,11 +55,17 @@ export function CADiagram() {
     let edges: CAEdge[] = [];
 
     const { interactionId } = useParams<{ interactionId: string }>();
+    const { pathname } = useLocation();
+    const {
+        data: interactionData,
+        isLoading,
+        isError,
+        error,
+    } = useInteraction(interactionId ?? '');
 
-    if (interactionId === undefined) {
-        if (!window.location.pathname.endsWith('/learning')) {
-            return <Typography color="error">CA Diagram not supported for this view.</Typography>;
-        }
+    const isLearningMode = interactionId === undefined && pathname.endsWith('/learning');
+
+    if (isLearningMode) {
         controller = {
             id: 'controller-learning',
             name: 'Controller',
@@ -262,14 +268,9 @@ export function CADiagram() {
 
 
     } else {
-        
-
-        const {
-            data: interactionData,
-            isLoading,
-            isError,
-            error,
-        } = useInteraction(interactionId ?? '');
+        if (interactionId === undefined) {
+            return <Typography color="error">CA Diagram not supported for this view.</Typography>;
+        }
 
         if (!interactionId) {
             return (

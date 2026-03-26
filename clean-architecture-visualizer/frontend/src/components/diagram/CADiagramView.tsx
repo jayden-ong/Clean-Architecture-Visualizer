@@ -1,11 +1,11 @@
 // This file is responsible for rendering the Clean Architecture Diagram based on the data passed in as props. 
 // It is a pure presentational component that does not contain any logic for fetching data or handling loading/error states.
 
-import { CANodeView, Edge } from './index';
+import { CANodeView } from './CANodeView';
+import { Edge, type EdgeRouteHint } from './Edge';
 import { CANode, CAEdge } from './../../lib/types';
 import { Container, Box, Typography } from '@mui/material';
 import { useMemo, useRef } from 'react';
-import type { EdgeRouteHint } from './Edge';
 
 type CADiagramViewProps = {
     controller: CANode;

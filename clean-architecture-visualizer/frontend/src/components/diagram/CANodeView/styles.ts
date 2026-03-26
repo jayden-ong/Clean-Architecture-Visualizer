@@ -1,4 +1,5 @@
-import { darken, Paper, styled } from '@mui/material';
+import { Paper } from '@mui/material';
+import { darken, styled } from '@mui/material/styles';
 import type { CANode } from '../../../lib/types';
 
 export type LayerColor = 'entities' | 'useCases' | 'adapters' | 'drivers';

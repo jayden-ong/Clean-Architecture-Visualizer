@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { NodePaper, type LayerColor } from './CANodeView.styles';
+import { NodePaper, type LayerColor } from './styles';
 import type { CANode } from '../../../lib/types';
 
 const layerColorMap: Record<CANode['layer'], LayerColor> = {
