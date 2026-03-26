@@ -332,6 +332,7 @@ export function CADiagram() {
             dataAccess={dataAccess}
             database={database}
             edges={edges}
+            areNodesInteractive={isLearningMode}
         />
     )
     

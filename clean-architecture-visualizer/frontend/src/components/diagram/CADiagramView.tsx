@@ -22,6 +22,7 @@ type CADiagramViewProps = {
     dataAccess: CANode;
     database: CANode;
     edges: CAEdge[];
+    areNodesInteractive?: boolean;
 };
 
 export function CADiagramView({
@@ -39,6 +40,7 @@ export function CADiagramView({
     dataAccess,
     database,
     edges,
+    areNodesInteractive = false,
 }: CADiagramViewProps) {
     const diagramContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -170,9 +172,9 @@ export function CADiagramView({
                             Interface Adapters
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', height: '100%' }}>
-                            <CANodeView {...controller} />
-                            <CANodeView {...presenter} />
-                            <CANodeView {...viewModel} />
+                            <CANodeView {...controller} isInteractive={areNodesInteractive} />
+                            <CANodeView {...presenter} isInteractive={areNodesInteractive} />
+                            <CANodeView {...viewModel} isInteractive={areNodesInteractive} />
                         </Box>
                     </Box>
 
@@ -181,18 +183,18 @@ export function CADiagramView({
                             Application Business Rules
                         </Typography>
                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', rowGap: 0.5, columnGap: 1 }}>
-                            <CANodeView {...inputData} />
+                            <CANodeView {...inputData} isInteractive={areNodesInteractive} />
                             <Box />
-                            <CANodeView {...inputBoundary} />
-                            <Box />
-                            <Box />
-                            <CANodeView {...interactor} />
-                            <CANodeView {...outputBoundary} />
-                            <Box />
-                            <CANodeView {...outputData} />
+                            <CANodeView {...inputBoundary} isInteractive={areNodesInteractive} />
                             <Box />
                             <Box />
-                            <CANodeView {...dataAccessInterface} />
+                            <CANodeView {...interactor} isInteractive={areNodesInteractive} />
+                            <CANodeView {...outputBoundary} isInteractive={areNodesInteractive} />
+                            <Box />
+                            <CANodeView {...outputData} isInteractive={areNodesInteractive} />
+                            <Box />
+                            <Box />
+                            <CANodeView {...dataAccessInterface} isInteractive={areNodesInteractive} />
                         </Box>
                     </Box>
 
@@ -212,7 +214,7 @@ export function CADiagramView({
                                 },
                             }}
                         >
-                            <CANodeView {...entities} />
+                            <CANodeView {...entities} isInteractive={areNodesInteractive} />
                         </Box>
                     </Box>
                 </Box>
@@ -226,10 +228,10 @@ export function CADiagramView({
                         </Typography>
                     </Box>
                     <Box sx={{ display: 'grid', gridTemplateColumns: '1.1fr 1.1fr 1.1fr 1.1fr', columnGap: 1.25, minWidth: 900 }}>
-                        <CANodeView {...view} />
+                        <CANodeView {...view} isInteractive={areNodesInteractive} />
                         <Box />
-                        <CANodeView {...dataAccess} />
-                        <CANodeView {...database} />
+                        <CANodeView {...dataAccess} isInteractive={areNodesInteractive} />
+                        <CANodeView {...database} isInteractive={areNodesInteractive} />
                     </Box>
                 </Box>
 

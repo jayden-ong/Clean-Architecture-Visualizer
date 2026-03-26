@@ -9,12 +9,21 @@ const layerColorMap: Record<CANode['layer'], LayerColor> = {
   Frameworks: 'drivers',
 };
 
-export function CANodeView(nodeObject: CANode) {
+type CANodeViewProps = CANode & {
+  isInteractive?: boolean;
+};
+
+export function CANodeView({ isInteractive, ...nodeObject }: CANodeViewProps) {
   const title = nodeObject.name ?? nodeObject.id;
   const layerColor = layerColorMap[nodeObject.layer] ?? 'adapters';
 
   return (
-    <NodePaper layerColor={layerColor} status={nodeObject.status} data-ca-node-id={nodeObject.id}>
+    <NodePaper
+      layerColor={layerColor}
+      status={nodeObject.status}
+      isInteractive={isInteractive}
+      data-ca-node-id={nodeObject.id}
+    >
       <Typography variant="body1" align="center" fontWeight="bold">
         {title}
       </Typography>

@@ -5,8 +5,16 @@ import type { CANode } from '../../../lib/types';
 export type LayerColor = 'entities' | 'useCases' | 'adapters' | 'drivers';
 
 export const NodePaper = styled(Paper, {
-  shouldForwardProp: (prop) => prop !== 'layerColor' && prop !== 'status',
-})<{ layerColor: LayerColor; status: CANode['status'] }>(({ theme, layerColor, status }) => ({
+  shouldForwardProp: (prop) => prop !== 'layerColor' && prop !== 'status' && prop !== 'isInteractive',
+})<{ layerColor: LayerColor; status: CANode['status']; isInteractive?: boolean }>(({
+  theme,
+  layerColor,
+  status,
+  isInteractive,
+}) => {
+  const canInteract = isInteractive ?? status !== 'MISSING';
+
+  return ({
   margin: theme.spacing(0.5, 1),
   backgroundColor: theme.palette[layerColor].main,
   border: '2px solid',
@@ -25,15 +33,18 @@ export const NodePaper = styled(Paper, {
     borderWidth: 5,
   }),
   transition: 'background-color 120ms ease, transform 120ms ease, box-shadow 120ms ease',
-  '&:hover': {
-    backgroundColor: darken(theme.palette[layerColor].main, 0.1),
-    transform: 'translateY(-1px)',
-    boxShadow: theme.shadows[3],
-    cursor: 'pointer',
-  },
-  '&:active': {
-    backgroundColor: darken(theme.palette[layerColor].main, 0.2),
-    transform: 'translateY(0)',
-    boxShadow: theme.shadows[1],
-  },
-}));
+  ...(canInteract && {
+    '&:hover': {
+      backgroundColor: darken(theme.palette[layerColor].main, 0.1),
+      transform: 'translateY(-1px)',
+      boxShadow: theme.shadows[3],
+      cursor: 'pointer',
+    },
+    '&:active': {
+      backgroundColor: darken(theme.palette[layerColor].main, 0.2),
+      transform: 'translateY(0)',
+      boxShadow: theme.shadows[1],
+    },
+  }),
+  });
+});
