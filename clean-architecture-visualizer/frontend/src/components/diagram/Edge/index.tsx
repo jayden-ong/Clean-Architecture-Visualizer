@@ -78,7 +78,6 @@ export function Edge({ startNode, endNode, status, arrowHeadType, containerRef, 
 
         const container = containerRef.current;
         if (!container) {
-            setLine(null);
             return;
         }
 
@@ -86,7 +85,6 @@ export function Edge({ startNode, endNode, status, arrowHeadType, containerRef, 
         const endElement = container.querySelector(`[data-ca-node-id="${cssEscape(endNode.id)}"]`) as HTMLElement | null;
 
         if (!startElement || !endElement) {
-            setLine(null);
             return;
         }
 
