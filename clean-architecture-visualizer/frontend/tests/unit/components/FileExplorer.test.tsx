@@ -3,10 +3,12 @@ import { render, screen, fireEvent } from '../../test-utils';
 import { FileExplorer } from '@/components/code/FileExplorer';
 import { server } from '@/mocks/server';
 import { http, HttpResponse } from 'msw';
+import { FileNode } from '@/lib';
+import { TreeNodeProps } from '@/components/code/FileExplorer/TreeNode.tsx'
 
 
 vi.mock('./TreeNode', () => ({
-  TreeNode: ({ node, toggleFolder }: any) => (
+  TreeNode: ({ node, toggleFolder }: TreeNodeProps) => (
     <div data-testid={`node-${node.name}`}>
       <span>{node.name}</span>
       {node.type === 'directory' && (
@@ -22,12 +24,13 @@ describe('FileExplorer Component', () => {
     activeFilePath: null,
   };
 
-  const mockFileTree = {
+  const mockFileTree: FileNode = {
     id: 'root',
     name: 'root',
     type: 'directory',
+    path: '/',
     children: [
-      { id: '1', name: 'src', type: 'directory', path: 'src' },
+      { id: '1', name: 'src', type: 'directory', path: 'src', children: [] },
       { id: '2', name: 'package.json', type: 'file', path: 'package.json' },
     ],
   };
@@ -39,15 +42,14 @@ describe('FileExplorer Component', () => {
 
     render(<FileExplorer {...defaultProps} />);
 
-    // 1. Find the "src" folder text
-    const folderLabel = await screen.findByText('src');
-    expect(folderLabel).toBeInTheDocument();
+    // Wait for the mock data to render
+    await screen.findByText('src');
 
-    // 2. Find the toggle icon (ChevronRight) near that text
-    const toggleButton = screen.getByTestId('ChevronRightIcon');
-    
-    // 3. Click it
+    // Click the button we defined in our mock above
+    const toggleButton = screen.getByText('Toggle');
     fireEvent.click(toggleButton);
+    
+    // Test passes if it handles the state update without crashing
   });
 
   it('automatically expands folders when an activeFilePath is provided', async () => {
@@ -55,12 +57,11 @@ describe('FileExplorer Component', () => {
       http.get('*/api/codebase/file-tree', () => HttpResponse.json(mockFileTree))
     );
 
-    // Test: If we target a nested file, does the parent show up?
     render(
       <FileExplorer {...defaultProps} activeFilePath="src/components/Button.tsx" />
     );
+
     const folder = await screen.findByText('src');
     expect(folder).toBeInTheDocument();
-    
   });
 });

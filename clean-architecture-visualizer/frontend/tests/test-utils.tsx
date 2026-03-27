@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { render, RenderOptions, renderHook, RenderHookOptions } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
