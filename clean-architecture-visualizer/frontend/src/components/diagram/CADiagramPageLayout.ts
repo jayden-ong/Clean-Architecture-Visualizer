@@ -14,22 +14,6 @@ export const Workspace = styled(Box)({
   overflow: 'hidden',
 });
 
-export const SidebarContainer = styled('aside', {
-  shouldForwardProp: (prop) => prop !== 'sidebarWidth',
-})<{
-  sidebarWidth: number;
-}>(({ theme, sidebarWidth }) => ({
-  width: sidebarWidth,
-  flexShrink: 0,
-  borderRight: `1px solid ${theme.palette.divider}`,
-  overflowY: 'auto',
-}));
-
-export const Resizer = styled('div')({
-  width: 4,
-  cursor: 'col-resize',
-});
-
 export const MainViewContainer = styled('main')(({ theme }) => ({
   flexGrow: 1,
   height: '100%',

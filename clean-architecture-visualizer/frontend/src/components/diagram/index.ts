@@ -5,3 +5,4 @@ export { LearningPopup } from './LearningPopup.tsx';
 export { CADiagram } from './CADiagram.tsx';
 export { CADiagramView } from './CADiagramView.tsx';
 export { Edge } from './Edge';
+export { SideBar } from './SideBar';
