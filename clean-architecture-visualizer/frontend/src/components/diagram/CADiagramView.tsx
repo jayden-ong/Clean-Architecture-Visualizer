@@ -5,7 +5,7 @@ import { CANodeView, type NodeClickInfo } from './CANodeView';
 import { Edge, type EdgeRouteHint } from './Edge';
 import { CANode, CAEdge } from './../../lib/types';
 import { Container, Box, Typography } from '@mui/material';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 type CADiagramViewProps = {
     controller: CANode;
@@ -45,6 +45,46 @@ export function CADiagramView({
     onNodeClick,
 }: CADiagramViewProps) {
     const diagramContainerRef = useRef<HTMLDivElement | null>(null);
+    const diagramContentRef = useRef<HTMLDivElement | null>(null);
+    const [layoutVersion, setLayoutVersion] = useState(0);
+
+    useEffect(() => {
+        const container = diagramContainerRef.current;
+        const content = diagramContentRef.current;
+        if (!container) {
+            return;
+        }
+
+        let rafId: number | null = null;
+        const scheduleRecompute = () => {
+            if (rafId !== null) {
+                return;
+            }
+            rafId = requestAnimationFrame(() => {
+                rafId = null;
+                setLayoutVersion((value) => value + 1);
+            });
+        };
+
+        const resizeObserver = new ResizeObserver(scheduleRecompute);
+        resizeObserver.observe(container);
+        if (content) {
+            resizeObserver.observe(content);
+        }
+
+        window.addEventListener('resize', scheduleRecompute);
+        container.addEventListener('scroll', scheduleRecompute, { passive: true });
+        scheduleRecompute();
+
+        return () => {
+            if (rafId !== null) {
+                cancelAnimationFrame(rafId);
+            }
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', scheduleRecompute);
+            container.removeEventListener('scroll', scheduleRecompute);
+        };
+    }, []);
 
     // Build a stable id->node lookup so each edge can resolve source/target nodes in O(1).
     const nodesById = useMemo(() => {
@@ -165,7 +205,7 @@ export function CADiagramView({
     return (
         <><Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 0.25, sm: 0.5, md: 0.75 } }}>
             <Container ref={diagramContainerRef} sx={{ border: 2, borderColor: 'grey.600', borderRadius: 8, bgcolor: 'grey.100', py: { xs: 0.5, sm: 0.75, md: 1.25 }, px: { xs: 0.5, sm: 1 }, overflowX: 'auto', position: 'relative' }}>
-                <Box sx={{ minWidth: { xs: 640, sm: 760, md: 'auto' } }}>
+                <Box ref={diagramContentRef} sx={{ minWidth: { xs: 640, sm: 760, md: 'auto' } }}>
                 <Box sx={{ display: 'grid', gridTemplateColumns: '1.1fr 2.1fr 1.1fr', columnGap: { xs: 0.5, sm: 0.75, md: 1.25 }, rowGap: { xs: 0.25, sm: 0.4, md: 0.5 }, width: '100%' }}>
                     <Box sx={{ border: 2, borderColor: 'adapters.contrastText', bgcolor: 'adapters.light', borderRadius: 2, p: { xs: 0.5, sm: 0.75, md: 1 } }}>
                         <Typography variant="subtitle2" sx={{ mb: { xs: 0.25, sm: 0.4, md: 0.5 }, fontWeight: 700, fontSize: 'clamp(0.68rem, 0.8vw, 0.875rem)' }}>
@@ -265,6 +305,7 @@ export function CADiagramView({
                             arrowHeadType={resolveArrowHeadType(edge.type)}
                             containerRef={diagramContainerRef}
                             routeHint={routeHintsByEdgeId[edge.id]}
+                            layoutVersion={layoutVersion}
                         />
                     );
                 })}

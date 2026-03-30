@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { CADiagram, SideBar, Legend, type NodeClickInfo } from '../components/diagram';
+import { CADiagram, SideBar, Legend, LearningSideBarContent, type NodeClickInfo } from '../components/diagram';
 import Header from '../components/common/Header';
 import { PageContainer, Workspace, MainViewContainer } from '../components/diagram/CADiagramPageLayout';
-import { LearningSideBarContent } from '../components/diagram/index.ts';
 
 export default function LearningMode() {
     const [isOpen, setIsOpen] = useState(false);

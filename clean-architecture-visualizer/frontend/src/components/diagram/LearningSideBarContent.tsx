@@ -4,12 +4,12 @@ import type { CAComponentType } from '../../lib/types';
 import { LAYER_METADATA } from '../../lib/types';
 import type { NodeClickInfo } from './CANodeView';
 
-interface LearningPopupProps {
+interface LearningSideBarContentProps {
     currentComponent?: CAComponentType;
     nodeInfo?: NodeClickInfo | null;
 }
 
-export const LearningSideBarContent = ({ currentComponent = 'Controller', nodeInfo }: LearningPopupProps) => {
+export const LearningSideBarContent = ({ currentComponent = 'Controller', nodeInfo }: LearningSideBarContentProps) => {
     // Use nodeInfo.type for canonical lookup keys when a node is clicked.
     const component = nodeInfo?.type ?? currentComponent;
     const layer = nodeInfo?.layer ?? 'InterfaceAdapters';
@@ -27,7 +27,7 @@ export const LearningSideBarContent = ({ currentComponent = 'Controller', nodeIn
     const diagramRelations = t(`components.${componentKey}.diagramRelations`, { returnObjects: true }) as string[];
 
     return (
-        <Paper sx={{ width: '100%', height: '100%', overflowY: 'auto', borderRadius: theme => theme.shape.borderRadius, p: 2, pr: 0}}>
+        <Paper sx={{ width: '100%', height: '100%', borderRadius: theme => theme.shape.borderRadius, p: 2, pr: 0}}>
             <Box sx={{ width: '100%', height: 'fit-content', maxHeight: '100%', overflowY: 'auto', pr: 2}}>
                 <Typography
                     variant="h4"
