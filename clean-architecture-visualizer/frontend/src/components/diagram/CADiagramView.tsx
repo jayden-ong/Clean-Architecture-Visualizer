@@ -164,7 +164,8 @@ export function CADiagramView({
 
     return (
         <><Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 0.25, sm: 0.5, md: 0.75 } }}>
-            <Container ref={diagramContainerRef} sx={{ border: 2, borderColor: 'grey.600', borderRadius: 8, bgcolor: 'grey.100', py: { xs: 0.5, sm: 0.75, md: 1.25 }, px: { xs: 0.5, sm: 1 }, overflowX: 'auto', position: 'relative', zoom: { xs: 0.78, sm: 0.9, md: 1 } }}>
+            <Container ref={diagramContainerRef} sx={{ border: 2, borderColor: 'grey.600', borderRadius: 8, bgcolor: 'grey.100', py: { xs: 0.5, sm: 0.75, md: 1.25 }, px: { xs: 0.5, sm: 1 }, overflowX: 'auto', position: 'relative' }}>
+                <Box sx={{ minWidth: { xs: 640, sm: 760, md: 'auto' } }}>
                 <Box sx={{ display: 'grid', gridTemplateColumns: '1.1fr 2.1fr 1.1fr', columnGap: { xs: 0.5, sm: 0.75, md: 1.25 }, rowGap: { xs: 0.25, sm: 0.4, md: 0.5 }, width: '100%' }}>
                     <Box sx={{ border: 2, borderColor: 'adapters.contrastText', bgcolor: 'adapters.light', borderRadius: 2, p: { xs: 0.5, sm: 0.75, md: 1 } }}>
                         <Typography variant="subtitle2" sx={{ mb: { xs: 0.25, sm: 0.4, md: 0.5 }, fontWeight: 700, fontSize: 'clamp(0.68rem, 0.8vw, 0.875rem)' }}>
@@ -244,6 +245,7 @@ export function CADiagramView({
                             <CANodeView {...database} isInteractive={areNodesInteractive} onNodeClick={onNodeClick} />
                         </Box>
                     </Box>
+                </Box>
                 </Box>
 
                 {edges.map((edge) => {

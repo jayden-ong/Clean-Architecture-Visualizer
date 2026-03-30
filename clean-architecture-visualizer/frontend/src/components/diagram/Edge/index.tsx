@@ -120,12 +120,14 @@ export function Edge({ startNode, endNode, status, arrowHeadType, containerRef, 
             const from = getPointOnRectSide(startRect, resolvedStartSide);
             const to = getPointOnRectSide(endRect, resolvedEndSide);
 
-            // Convert viewport coordinates into container-local SVG coordinates.
+            // Convert viewport coordinates into container content coordinates.
+            // The SVG layer scrolls with the container content, so we must add
+            // the current scroll offset to keep anchors stable while scrolling.
             setLine({
-                x1: from.x - containerRect.left,
-                y1: from.y - containerRect.top,
-                x2: to.x - containerRect.left,
-                y2: to.y - containerRect.top,
+                x1: from.x - containerRect.left + container.scrollLeft,
+                y1: from.y - containerRect.top + container.scrollTop,
+                x2: to.x - containerRect.left + container.scrollLeft,
+                y2: to.y - containerRect.top + container.scrollTop,
                 direction,
             });
         };
