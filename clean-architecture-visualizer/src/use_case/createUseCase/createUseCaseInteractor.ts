@@ -1,16 +1,24 @@
 import type { FileAccessInterface } from "../../data_access/fileAccessInterface.js";
 import type { CreateUseCaseInputBoundary } from "./createUseCaseInputBoundary.js";
-import type { CreateUseCaseInputData } from "./createUseCaseInputData.js";
-import type { CreateUseCaseOutputData } from "./createUseCaseOutputData.js";
+import { CreateUseCaseInputData } from "./createUseCaseInputData.js";
+import { CreateUseCaseOutputData } from "./createUseCaseOutputData.js";
 import path from "path";
 
 export class CreateUseCaseinteractor implements CreateUseCaseInputBoundary {
     
+    private readonly fileAccess: FileAccessInterface;
+    private inputData: CreateUseCaseInputData;
+    private readonly outputData: CreateUseCaseOutputData;
+
     constructor(
-        private readonly fileAccess: FileAccessInterface,
-        private readonly inputData: CreateUseCaseInputData,
-        private readonly outputData: CreateUseCaseOutputData
-    ) {}
+        fileAccess: FileAccessInterface,
+        inputData: CreateUseCaseInputData = new CreateUseCaseInputData(""),
+        outputData: CreateUseCaseOutputData = new CreateUseCaseOutputData(),
+    ) {
+        this.fileAccess = fileAccess;
+        this.inputData = inputData;
+        this.outputData = outputData;
+    }
 
     async execute(): Promise<void> {
         try {
@@ -54,5 +62,9 @@ export class CreateUseCaseinteractor implements CreateUseCaseInputBoundary {
             console.error(error);
             this.outputData.setOutputData(false);
         }
+    }
+
+    newUseCase(inputData: CreateUseCaseInputData): void {
+        this.inputData = inputData;
     }
 }

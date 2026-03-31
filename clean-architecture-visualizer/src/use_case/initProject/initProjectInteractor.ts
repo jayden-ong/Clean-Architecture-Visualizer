@@ -1,18 +1,25 @@
 import type { FileAccessInterface } from "../../data_access/fileAccessInterface.js";
 import type { InitProjectInputBoundary } from "./initProjectInputBoundary.js";
-import type { InitProjectOutputData } from "./initProjectOutputData.js";
+import { InitProjectOutputData } from "./initProjectOutputData.js";
 import path from "path";
 
 export class InitProjectInteractor implements InitProjectInputBoundary{
     
+    private readonly fileAccess: FileAccessInterface;
+    private readonly outputData: InitProjectOutputData;
+
     constructor(
-        private readonly fileAccess: FileAccessInterface,
-        private readonly outputData: InitProjectOutputData
-    ) {}
+        fileAccess: FileAccessInterface,
+        outputData: InitProjectOutputData = new InitProjectOutputData()
+    ) {
+        this.fileAccess = fileAccess,
+        this.outputData = outputData
+    }
 
     async execute(): Promise<void> {
         try {
-            const currPath = await this.fileAccess.getCurrentPath();
+            let currPath = await this.fileAccess.getCurrentPath();
+            currPath = path.join(currPath, "src")
             
             // 1. Define base paths using path.join for cross-platform support
             const javaPath = path.join(currPath, "main", "java");
