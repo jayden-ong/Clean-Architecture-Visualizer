@@ -31,7 +31,7 @@ router.post("/template/generate",  (_req, res) => {
     res.status(201).json({ message: `Project initiated successfully` });
 });
 
-router.post("/template/:useCaseName", async (req, res) => {
+router.post("/template/add/:useCaseName", async (req, res) => {
     const inputData = new CreateUseCaseInputData(req.params.useCaseName);
     const outputData = new CreateUseCaseOutputData();
     const interactor = new CreateUseCaseinteractor(fileAccess, inputData, outputData);
