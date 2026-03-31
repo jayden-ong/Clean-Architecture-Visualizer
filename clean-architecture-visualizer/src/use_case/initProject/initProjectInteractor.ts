@@ -1,6 +1,7 @@
 import type { FileAccessInterface } from "../../data_access/fileAccessInterface.js";
 import type { InitProjectInputBoundary } from "./initProjectInputBoundary.js";
 import type { InitProjectOutputData } from "./initProjectOutputData.js";
+import path from "path";
 
 export class InitProjectInteractor implements InitProjectInputBoundary{
     
@@ -13,32 +14,32 @@ export class InitProjectInteractor implements InitProjectInputBoundary{
         try {
             const currPath = await this.fileAccess.getCurrentPath();
             
-            // Main directories
-            const javaPath = currPath + "/main/java";
-            const testPath = currPath + "/test/java";
+            // 1. Define base paths using path.join for cross-platform support
+            const javaPath = path.join(currPath, "main", "java");
+            const testPath = path.join(currPath, "test", "java");
 
-            // Sub-directories
-            const app = javaPath + "/app";
-            const useCase = javaPath + "/use_case";
-            const entity = javaPath + "/entity";
-            const interfaceAdapter = javaPath + "/interface_adapter";
-            const dataAccess = javaPath + "/data_access";
-            const view = javaPath + "/view";
+            // 2. Define sub-directories within the java path
+            const subDirs = [
+                "app",
+                "use_case",
+                "entity",
+                "interface_adapter",
+                "data_access",
+                "view"
+            ];
 
-            // Create directories
             await this.fileAccess.createDirectory(javaPath);
             await this.fileAccess.createDirectory(testPath);
 
-            await this.fileAccess.createDirectory(app);
-            await this.fileAccess.createDirectory(useCase);
-            await this.fileAccess.createDirectory(entity);
-            await this.fileAccess.createDirectory(interfaceAdapter);
-            await this.fileAccess.createDirectory(dataAccess);
-            await this.fileAccess.createDirectory(view);
+            for (const dirName of subDirs) {
+                const fullPath = path.join(javaPath, dirName);
+                await this.fileAccess.createDirectory(fullPath);
+            }
 
             this.outputData.setOutputData(true);
         }
         catch (error) {
+            console.error("Initialization failed:", error);
             this.outputData.setOutputData(false);
         }
     }

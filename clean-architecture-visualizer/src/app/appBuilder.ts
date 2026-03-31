@@ -49,6 +49,12 @@ export class AppBuilder {
         return this;
     }
 
+    buildInitProjectInteractor(
+        InteractorClass: new (
+            fileAccess: FileAccess
+        )
+    )
+
     // Controller Layer
     buildGraphVerificationController(
         ControllerClass: new (interactor: GraphVerificationInputBoundary) => GraphVerificationController

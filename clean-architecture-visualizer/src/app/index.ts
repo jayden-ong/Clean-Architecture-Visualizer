@@ -156,6 +156,13 @@ program
 program.parse(process.argv);
 
 program
+  .command('usecase <name>')
+  .description('Create the template for a new use case')
+  .action(async() => {
+    app.
+  })
+
+program
   .command('end')
   .description('Close the express server and clean the tempdir')
   .action(async() => {
