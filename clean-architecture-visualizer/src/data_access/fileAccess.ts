@@ -153,7 +153,7 @@ export class FileAccess implements FileAccessInterface {
             });
         }
         catch {
-            console.log("The file: " + path + " could not be found");
+            console.log("The file: " + filePath + " could not be found");
             return [];
         }
 
