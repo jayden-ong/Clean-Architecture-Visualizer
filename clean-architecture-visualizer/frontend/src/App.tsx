@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppGlobalStyles } from './styles/AppGlobalStyles';
 import Home from './pages/Home';
@@ -11,8 +10,9 @@ import { ThemeProvider } from '@mui/material/styles';
 import { lightTheme } from './lib';
 
 
-const App: React.FC = () => {
+export default function App() {
     return (
+        // When a theme toggle is implemented, we can use a state variable to switch between lightTheme and darkTheme here.
         <ThemeProvider theme={lightTheme}>
             <AppGlobalStyles />
         <Router>
@@ -29,4 +29,3 @@ const App: React.FC = () => {
   );
 }
 
-export default App;

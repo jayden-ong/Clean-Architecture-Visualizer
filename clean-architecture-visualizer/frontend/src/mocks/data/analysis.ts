@@ -45,7 +45,7 @@ export const mockInteractionDetails = {
   nodes: [
     {
       id: "usecasename-UserSignOutController",
-      name: "UserSignOutController",
+      name: "Controller",
       type: "Controller",
       layer: "InterfaceAdapters",
       file_path: "src/interface_adapters/UserSignOutController.java",
@@ -53,10 +53,92 @@ export const mockInteractionDetails = {
     },
     {
       id: "Entities",
+      name: "Entities",
       type: "Entity",
       layer: "EnterpriseBusinessRules",
       status: "MISSING"
-    }
+    },
+    {
+      id: "UserSignOutPresenter",
+      name: "Presenter",
+      type: "Presenter",
+      layer: "InterfaceAdapters",
+      status: "VIOLATION"
+    },
+    {
+      id: "UserSignOutViewModel",
+      name: "View Model",
+      type: "ViewModel",
+      layer: "InterfaceAdapters",
+      status: "VIOLATION"
+    },
+    {
+      id: "UserSignOutInputBoundary",
+      name: "Input Boundary",
+      type: "InputBoundary",
+      layer: "ApplicationBusinessRules",
+      status: "VALID"
+    },
+    {
+      id: "UserSignOutInputData",
+      name: "Input Data",
+      type: "InputData",
+      layer: "ApplicationBusinessRules",
+      status: "VALID"
+    },
+    {
+      id: "UserSignOutInteractor",
+      name: "Use Case Interactor",
+      type: "Interactor",
+      layer: "ApplicationBusinessRules",
+      file_path: "src/use_cases/UserSignOutInteractor.java",
+      status: "VIOLATION"
+    },
+    {
+      id: "UserSignOutOutputBoundary",
+      name: "Output Boundary",
+      type: "OutputBoundary",
+      layer: "ApplicationBusinessRules",
+      status: "VALID"
+    },
+    {
+      id: "UserSignOutOutputData",
+      name: "Output Data",
+      type: "OutputData",
+      layer: "ApplicationBusinessRules",
+      status: "VALID"
+    },
+    {
+      id: "UserSignOutDataAccessInterface",
+      name: "Data Access Interface",
+      type: "DataAccessInterface",
+      layer: "ApplicationBusinessRules",
+      status: "MISSING"
+    },
+    {
+      id: "UserSignOutView",
+      name: "View",
+      type: "View",
+      layer: "Frameworks",
+      file_path: "src/views/UserSignOutView.java",
+      status: "VALID"
+    },
+    {
+      id: "UserSignOutDataAccess",
+      name: "Data Access",
+      type: "DataAccess",
+      layer: "Frameworks",
+      file_path: "src/framework_drivers/UserSignOutDataAccess.java",
+      status: "VALID"
+    },
+    {
+      id: "Database",
+      name: "Database",
+      type: "Database",
+      layer: "Frameworks",
+      file_path: "src/framework_drivers/Database.java",
+      status: "VALID"
+    },
   ],
   edges: [
     {

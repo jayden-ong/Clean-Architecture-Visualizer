@@ -1,7 +1,35 @@
+// Clean Architecture layer identifiers used across diagram and code view models.
 export type CALayer = 'Frameworks' | 'InterfaceAdapters' | 'ApplicationBusinessRules' | 'EnterpriseBusinessRules';
-
 export type CALayerKey = 'entities' | 'useCases' | 'adapters' | 'drivers';
 
+// Canonical value sets; related union types are derived from these constants.
+export const COMPONENT_TYPES = [
+  'Controller',
+  'Presenter',
+  'View',
+  'ViewModel',
+  'InputBoundary',
+  'OutputBoundary',
+  'InputData',
+  'OutputData',
+  'Interactor',
+  'Entity',
+  'DataAccessInterface',
+  'DataAccess',
+  'Database',
+] as const;
+export type CAComponentType = (typeof COMPONENT_TYPES)[number];
+
+export const NODE_STATUSES = ['VALID', 'MISSING', 'VIOLATION'] as const;
+export type CANodeStatus = (typeof NODE_STATUSES)[number];
+
+export const EDGE_TYPES = ['DEPENDENCY', 'ASSOCIATION', 'INHERITANCE'] as const;
+export type CAEdgeType = (typeof EDGE_TYPES)[number];
+
+export const EDGE_STATUSES = ['VALID', 'VIOLATION', 'INCORRECT_DEPENDENCY'] as const;
+export type CAEdgeStatus = (typeof EDGE_STATUSES)[number];
+
+// UI metadata for mapping architecture layers to palette groups and display labels.
 interface LayerMetadata {
   paletteKey: CALayerKey;
   label: string;
@@ -26,20 +54,29 @@ export const LAYER_METADATA: Record<CALayer, LayerMetadata> = {
   },
 };
 
-export type CAComponentType = 
-  | 'Controller' 
-  | 'Presenter' 
-  | 'View' 
-  | 'ViewModel' 
-  | 'InputBoundary' 
-  | 'OutputBoundary' 
-  | 'InputData' 
-  | 'OutputData' 
-  | 'Interactor' 
-  | 'Entity' 
-  | 'DataAccessInterface'
-  | 'DataAccess'
-  | 'Database';
+// Core graph entities used by interaction detail views.
+export interface CANode {
+  id: string;
+  name?: string;
+  type: CAComponentType;
+  layer: CALayer;
+  file_path?: string;
+  status: CANodeStatus;
+}
+
+export interface CAEdge {
+  id: string;
+  source: string;
+  target: string;
+  type: CAEdgeType;
+  status: CAEdgeStatus;
+}
+
+export interface InteractionDetail {
+  interaction_name: string;
+  nodes: CANode[];
+  edges: CAEdge[];
+}
 
 // --- Violation Types ---
 export interface Violation {
@@ -56,51 +93,27 @@ export interface Violation {
   };
 }
 
-// --- Interaction Details (Graph Data) ---
-export interface CANode {
-  id: string;
-  name?: string; 
-  type: CAComponentType;
-  layer: CALayer;
-  file_path?: string;
-  status: 'VALID' | 'MISSING' | 'VIOLATION';
-}
-
-export interface CAEdge {
-  id: string;
-  source: string;
-  target: string;
-  type: 'DEPENDENCY' | 'ASSOCIATION' | 'INHERITANCE';
-  status: 'VALID' | 'VIOLATION' | 'INCORRECT_DEPENDENCY';
-}
-
-export interface InteractionDetail {
-  interaction_name: string;
-  nodes: CANode[];
-  edges: CAEdge[];
-}
-
-// --- Summary Types ---
+// Summary endpoint models.
 export interface Interaction {
-  interaction_id: string; 
-  interaction_name: string; 
+  interaction_id: string;
+  interaction_name: string;
 }
 
 export interface UseCase {
-  id: string; 
-  name: string; 
-  violation_count: number; 
+  id: string;
+  name: string;
+  violation_count: number;
   interactions?: Interaction[];
 }
 
 export interface AnalysisSummary {
-  project_name: string; 
-  total_use_cases: number; 
-  total_violations: number; 
-  use_cases: UseCase[]; 
+  project_name: string;
+  total_use_cases: number;
+  total_violations: number;
+  use_cases: UseCase[];
 }
 
-// --- CodeView Types ---
+// Code view and file navigation models.
 export interface FileNode {
   id: string;
   name: string;

@@ -36,11 +36,17 @@ export const lightTheme = createTheme({
             secondary: '#616161',
         },
         error: {
-            main: '#D84315',
+            main: '#E80000',
         },
         background: {
             default: '#FFFFFF',
             paper: '#FFFFFF',
+        },
+        success: {
+            main: '#4caf50', 
+        },
+        info: {
+            main: '#222222', 
         },
     },
     typography: {

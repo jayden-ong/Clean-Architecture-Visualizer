@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../i18n/config';
 import { Link } from 'react-router-dom';
@@ -14,7 +14,7 @@ import { HomeIcon, InfoIcon, CheckCircleIcon, ErrorIcon } from '../assets/icons'
 import { useAnalysisSummary } from '../actions/useAnalysis';
 import { UseCase, Interaction } from '../lib/types';
 
-const CheckerMode: React.FC = () => {
+export default function CheckerMode(){
     const { t } = useTranslation('checker');
     const [search, setSearch] = useState('');
 
@@ -146,6 +146,4 @@ const CheckerMode: React.FC = () => {
             </div>
         </div>
     );
-};
-
-export default CheckerMode;
+}

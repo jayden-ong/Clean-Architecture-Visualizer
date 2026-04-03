@@ -5,7 +5,7 @@ interface DropdownProps {
     onSelect: (option: string) => void;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ options, onSelect }) => {
+export default function Dropdown({ options, onSelect }: DropdownProps) {
     const [isOpen, setIsOpen] = React.useState(false);
     const [selectedOption, setSelectedOption] = React.useState<string | null>(null);
 
@@ -33,6 +33,4 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onSelect }) => {
             )}
         </div>
     );
-};
-
-export default Dropdown;
+}
