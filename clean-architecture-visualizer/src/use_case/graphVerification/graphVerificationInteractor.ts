@@ -3,7 +3,7 @@ import type { CleanArchInfoAccessInterface } from "../../data_access/cleanArchIn
 import type { SessionDBAccessInterface } from "../../data_access/sessionDBAccessInterface.js";
 import type { GraphVerificationInputBoundary } from "./graphVerificationInputBoundary.js";
 import type { cleanNode } from "../../types/cleanNode.js";
-import { useCaseGraph } from "../../entities/useCaseGraph.js";
+import { useCaseGraph } from "../../entity/useCaseGraph.js";
 import type { EdgeStorage, FileStorage, NodeStorage } from "../../types/sessionData.js";
 import type { cleanLayer } from "../../types/cleanLayer.js";
 
@@ -134,7 +134,7 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
         if (importPath.includes("viewmodel")) return "viewModel"; // must be verified before 'view'
         if (importPath.includes("view")) return "view";
         if (importPath.includes("database")) return "database";
-        if (importPath.includes("entities")) return "entities";
+        if (importPath.includes("entity")) return "entities";
         if (importPath.includes("accessinterface")) return "dataAccessInterface"; // must be verified before 'dataAccess'
         if (importPath.includes("access")) return "dataAccess";
         if (importPath.includes("controller")) return "controller";

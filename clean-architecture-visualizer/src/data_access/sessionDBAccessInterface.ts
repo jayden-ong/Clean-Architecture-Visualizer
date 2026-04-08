@@ -1,7 +1,7 @@
 import type { cleanNode } from "../types/cleanNode.js";
 import type { cleanLayer } from "../types/cleanLayer.js";
 import type { SessionData, FileStorage, EdgeStorage, NodeStorage } from "../types/sessionData.js";
-import type { useCaseGraph } from "../entities/useCaseGraph.js";
+import type { useCaseGraph } from "../entity/useCaseGraph.js";
 
 export interface SessionDBAccessInterface {
     // Setters

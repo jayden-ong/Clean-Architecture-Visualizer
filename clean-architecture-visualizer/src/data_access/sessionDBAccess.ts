@@ -1,5 +1,5 @@
 import type { SessionData, FileStorage, EdgeStorage, NodeStorage } from "../types/sessionData.js";
-import type { useCaseGraph } from "../entities/useCaseGraph.js";
+import type { useCaseGraph } from "../entity/useCaseGraph.js";
 import type { SessionDBAccessInterface } from "./sessionDBAccessInterface.js";
 import { SessionDB } from "../database/sessionDb.js";
 import type { cleanNode } from "../types/cleanNode.js";
