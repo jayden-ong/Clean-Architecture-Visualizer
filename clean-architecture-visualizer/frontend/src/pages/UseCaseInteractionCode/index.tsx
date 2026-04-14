@@ -4,6 +4,8 @@ import '../../i18n/config';
 import Header from '../../components/common/Header';
 import { FileExplorer } from '../../components/code/FileExplorer';
 import { CodeViewer } from '../../components/code/CodeViewer';
+import { SideBar } from '../../components/diagram';
+import ViolationsSideBarContent from '../../components/diagram/ViolationsSideBarContent';
 import {
   PageContainer,
   Workspace,
@@ -28,6 +30,7 @@ const UseCaseInteractionCode = () => {
   const [activeFilePath, setActiveFilePath] = useState<string | null>(
     searchParams.get('file'),
   );
+  const [isOpen, setIsOpen] = useState(true);
   const [history, setHistory] = useState<string[]>([]);
 
   const handleNavigate = (newPath: string) => {
@@ -92,6 +95,10 @@ const UseCaseInteractionCode = () => {
             onFileChange={handleNavigate}
           />
         </MainViewContainer>
+
+        <SideBar isOpen={isOpen} onOpenChange={setIsOpen}>
+          <ViolationsSideBarContent interactionId={interactionId} />
+        </SideBar>
       </Workspace>
     </PageContainer>
   );
