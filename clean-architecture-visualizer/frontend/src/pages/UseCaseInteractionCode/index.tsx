@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import '../../i18n/config';
 import Header from '../../components/common/Header';
 import { FileExplorer } from '../../components/code/FileExplorer';
 import { CodeViewer } from '../../components/code/CodeViewer';
