@@ -21,11 +21,8 @@ i18n.use(initReactI18next).init({
       checker: enChecker,
       home: enHome,
       common: enCommon,
-<<<<<<< feature/finish-ca-diagram-page
       violationsSideBarContent: enViolationsSideBarContent,
-=======
       legend: enLegend,
->>>>>>> main
       useCaseInteractionCode: enUseCaseInteractionCode,
       useCaseInteractionDiagram: enUseCaseInteractionDiagram,
       codeViewer: enCodeViewer,
