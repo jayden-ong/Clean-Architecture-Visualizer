@@ -212,13 +212,6 @@ export const mockInteractionDetails = {
       status: "VALID"
     },
     {
-      id: "edge-10",
-      source: "UserSignOutDataAccess",
-      target: "UserSignOutDataAccessInterface",
-      type: "INHERITANCE",
-      status: "VIOLATION"
-    },
-    {
       id: "edge-11",
       source: "UserSignOutInteractor",
       target: "Database",
