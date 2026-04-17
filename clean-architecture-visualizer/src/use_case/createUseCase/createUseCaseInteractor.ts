@@ -22,8 +22,9 @@ export class CreateUseCaseinteractor implements CreateUseCaseInputBoundary {
             let useCase = await this.fileAccess.bfsFindDir(currPath, "use_case");
             let interfaceAdapter = await this.fileAccess.bfsFindDir(currPath, "interface_adapter");
 
+
             if (!useCase || !interfaceAdapter) {
-                throw new Error("Could not find use_case or interface_adapter, try intiating project first");
+                throw new Error("Could not find use_case or interface_adapter, try initiating project first");
             }
 
             useCase = useCase + "/" + useCaseName;
