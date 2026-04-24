@@ -4,21 +4,149 @@ sidebar_position: 4
 
 # CAVE Frontend
 
-## Tech Stack
+## Table of Contents
 
-The project utilizes a modern development stack to ensure a responsive and maintainable codebase for the UofT Blueprint team:
+- [Start Here](#start-here)
+- [Daily Workflow](#daily-workflow)
+- [Standards and Architecture](#standards-and-architecture)
 
-* **React and Vite**: We use Vite to provide a fast development environment and an optimized production build process.
-* **Material UI (MUI)**: This library is our primary source for standardized UI components and iconography.
-* **Custom Components**: In addition to MUI, we have developed internal custom components specifically tailored for the unique requirements of Clean Architecture visualization.
-* **Mock Service Worker (MSW)**: We use MSW to provide mock data and simulate backend endpoints. This allow simultaneous development of frontend and backend.
-* **TypeScript**: We use TypeScript throughout the project to ensure type safety and code quality.
-* **Vitest**: This is our primary framework for executing unit and integration tests.
-* **Playwright**: We utilize Playwright for comprehensive end-to-end testing to ensure the visualizer functions correctly across different browsers.
+## Start Here
 
-## Frontend File Structure
+This section is for getting the app running quickly and making your first change with minimal setup friction.
 
-The frontend app lives in `frontend/src`. Use this structure as the default guide for where code should go:
+### Quick start
+
+1. Install dependencies:
+
+   ```bash
+   cd clean-architecture-visualizer/frontend
+   npm install
+   ```
+
+2. Start the frontend:
+
+   ```bash
+   npm run dev
+   ```
+
+3. Open [http://localhost:5173](http://localhost:5173).
+
+### Launching options
+
+#### Option 1: Via the CLI (recommended)
+
+From the project root that you wish to validate your adherence to clean architecture (or anywhere after `npm link`):
+
+```bash
+cave start
+```
+
+For example, from this repo root:
+
+```bash
+cave start clean-architecture-visualizer
+```
+
+This will:
+
+1. Read the directory
+2. Start the Vite dev server (default port 5173)
+3. Open your browser to `http://localhost:5173`
+
+#### Option 2: Run frontend only with mock data (MSW)
+
+```bash
+cd clean-architecture-visualizer/frontend
+npm install
+npm run dev
+```
+
+#### Option 3: Build and preview production output
+
+```bash
+cd clean-architecture-visualizer/frontend
+npm install
+npm run build
+npm run preview
+```
+
+### Role-based onboarding paths
+
+#### Frontend feature dev path
+
+1. Start with `npm run dev`.
+2. Find placement using the file structure section below (`pages`, `components`, `api`, `actions`).
+3. Implement feature with shared types/constants in `src/lib`.
+4. Run `npm run type-check`, `npm run lint`, and relevant tests.
+
+#### Bugfix-only path
+
+1. Reproduce quickly with `npm run dev`.
+2. Add or update the smallest focused test (`test:unit` first, `test:e2e` if user flow regression).
+3. Fix the issue close to source (avoid broad refactors).
+4. Re-run checks before opening PR.
+
+#### Docs/contributor path
+
+1. Run the app locally once to validate screenshots/steps.
+2. Update docs and command names exactly as defined in `package.json` scripts.
+3. Confirm new instructions are copy-paste runnable from the stated directory.
+
+### Common pitfalls
+
+- Wrong folder path: run frontend commands from `clean-architecture-visualizer/frontend`, not `cave-docs`.
+- Missing Playwright setup: run `npm run setup` before the first e2e run on a new machine.
+- Backend mode confusion: use `npm run dev` for mock-data frontend flow and `npm run dev:backend` when you intend to connect to backend mode.
+
+## Daily Workflow
+
+### Command map
+
+The following scripts are defined for development, testing, and quality checks:
+
+| Command | Description |
+| :--- | :--- |
+| `npm run dev` | Starts Vite dev server at `http://localhost:5173`. |
+| `npm run dev:backend` | Starts Vite in backend mode. |
+| `npm run build` | Runs TypeScript project build and production bundling. |
+| `npm run preview` | Serves the local production build for verification. |
+| `npm run setup` | Installs Playwright browsers for e2e tests. |
+| `npm run lint` | Runs ESLint with warnings treated as failures. |
+| `npm run type-check` | Runs TypeScript checks without emitting files. |
+| `npm run test:unit` | Executes Vitest unit tests. |
+| `npm run test:e2e` | Runs Playwright end-to-end tests. |
+| `npm run test:e2e:ui` | Runs Playwright tests in UI mode. |
+| `npm run test:e2e:debug` | Runs Playwright in debug mode. |
+
+### Suggested daily loop
+
+1. Pull latest changes and run `npm install` if lockfile changed.
+2. Start local dev with `npm run dev`.
+3. Implement changes in small commits.
+4. Before PR: run `npm run type-check`, `npm run lint`, and relevant tests.
+
+### Testing and debugging
+
+- Unit tests: use `npm run test:unit` for component logic and utilities.
+- End-to-end tests: use `npm run test:e2e` for full user workflows.
+- Debugging e2e failures: use `npm run test:e2e:debug` or `npm run test:e2e:ui`.
+
+## Standards and Architecture
+
+### Tech stack
+
+The project uses:
+
+- React + Vite for the app shell and build pipeline.
+- Material UI for core UI components.
+- TypeScript for type safety.
+- React Query patterns in `actions` for data workflows.
+- MSW for mock endpoint behavior during frontend-only development.
+- Vitest and Playwright for unit and e2e testing.
+
+### Frontend file structure
+
+The frontend app lives in `clean-architecture-visualizer/frontend/src`.
 
 ```text
 frontend/src/
@@ -39,19 +167,32 @@ frontend/src/
 
 Placement rules:
 
-* Put route-level UI in `pages/`, and reusable pieces in `components/`.
-* Put data fetching and server interaction in `api/` + `actions/` (not inside presentational components).
-* Put shared cross-feature definitions in `lib/`.
-* Put generic helpers in `utils/` and reusable hooks in `hooks/`.
+- Put route-level UI in `pages`, and reusable pieces in `components`.
+- Put data fetching and server interaction in `api` plus `actions` (not in presentational components).
+- Put shared cross-feature definitions in `lib`.
+- Put reusable hooks in `hooks` and generic helpers in `utils`.
 
-## i18n
-TODO: Add a short i18n section that explains where translation files live, how to add new keys, and how to use `useTranslation` in components.
+### Reusable types and constants
 
-## UI Styling Conventions
+Define reusable values once and import them where needed.
 
-### Using the MUI colour palette
+- If a type or constant is used in more than one file, place it in `src/lib`.
+- Shared types go in `src/lib/types.ts`.
+- Shared constants go in `src/lib/storageKeys.ts` (and similar files in `src/lib` when needed).
+- Before creating new definitions, check `src/lib` and reuse existing definitions.
 
-Use theme palette values instead of hardcoded hex values whenever possible. This keeps colours consistent across the app and makes future theme updates easier.
+### File naming conventions
+
+- Use `index.tsx` for a component entry file and `styles.ts` for styled definitions.
+- Use `PascalCase` folder names for components and pages (for example: `CodeViewer`, `CheckerMode`).
+- Use `camelCase` for utility/lib files (for example: `storageKeys.ts`).
+- Use descriptive names for hooks and tests (for example: `useSomething.ts`, `ComponentName.test.tsx`).
+
+### UI styling conventions
+
+#### Using the MUI colour palette
+
+Use theme palette values instead of hardcoded hex values whenever possible.
 
 Recommended approach:
 
@@ -73,18 +214,18 @@ export const Panel = styled('section')(({ theme }) => ({
 
 If a new colour is needed, prefer adding it to the theme first, then consuming it from components.
 
-### Component file separation: `index.tsx` + `styles.ts`
+#### Component file separation: `index.tsx` plus `styles.ts`
 
-For most reusable UI components, separate structure/logic from styling:
+For most reusable UI components, separate structure and logic from styling.
 
-* `index.tsx`: component logic, props, hooks, and JSX structure.
-* `styles.ts`: styled wrappers and visual primitives.
+- `index.tsx`: component logic, props, hooks, and JSX structure.
+- `styles.ts`: styled wrappers and visual primitives.
 
 Benefits:
 
-* Keeps component logic readable.
-* Makes style reuse and review easier.
-* Reduces merge conflicts when one person changes logic and another changes styling.
+- Keeps component logic readable.
+- Makes style reuse and review easier.
+- Reduces merge conflicts when one person changes logic and another changes styling.
 
 Suggested pattern:
 
@@ -123,140 +264,91 @@ export const Title = styled('h3')(({ theme }) => ({
 
 Notes:
 
-* Small one-file components are fine when separation adds unnecessary overhead.
-* For larger components, default to this split to keep files maintainable.
+- Small one-file components are fine when separation adds unnecessary overhead.
+- For larger components, default to this split to keep files maintainable.
 
-Example folder structure:
+Good examples in this codebase:
 
-```text
-frontend/src/components/FeatureCard/
-   index.tsx
-   styles.ts
-frontend/src/components/AnotherComponent/
-   index.tsx
-   styles.ts
-```
+- `frontend/src/components/code/CodeViewer/index.tsx` plus `frontend/src/components/code/CodeViewer/styles.ts`
+- `frontend/src/components/code/FileExplorer/index.tsx` plus `frontend/src/components/code/FileExplorer/styles.ts`
+- `frontend/src/components/diagram/ViolationsSideBarContent/index.tsx` plus `frontend/src/components/diagram/ViolationsSideBarContent/styles.ts`
+- `frontend/src/components/diagram/SideBar/index.tsx` plus `frontend/src/components/diagram/SideBar/styles.ts`
+- `frontend/src/pages/CheckerMode/index.tsx` plus `frontend/src/pages/CheckerMode/styles.ts`
 
-### Good examples in this codebase
-
-New developers can use these files as references:
-
-* `frontend/src/components/code/CodeViewer/index.tsx` + `frontend/src/components/code/CodeViewer/styles.ts`
-   * Good example of a component that keeps view logic in `index.tsx` and palette-driven styled components in `styles.ts`.
-* `frontend/src/components/code/FileExplorer/index.tsx` + `frontend/src/components/code/FileExplorer/styles.ts`
-   * Good example of conditional styling using `theme.palette.*` for active, hover, and text states.
-* `frontend/src/components/diagram/ViolationsSideBarContent/index.tsx` + `frontend/src/components/diagram/ViolationsSideBarContent/styles.ts`
-   * Good example of separating rendering/data-state logic from visual primitives.
-* `frontend/src/components/diagram/SideBar/index.tsx` + `frontend/src/components/diagram/SideBar/styles.ts`
-   * Good example of layout-focused styled components with theme spacing and palette tokens.
-
-Related pattern:
-
-* `frontend/src/pages/CheckerMode/index.tsx` + `frontend/src/pages/CheckerMode/styles.ts`
-   * Uses a shared `styles` object consumed via MUI `sx`, which is also acceptable for page-level styling.
-
-## Reusable Types and Constants
-
-Define reusable values once and import them everywhere they are needed.
-
-* If a type or constant is used in more than one file, it should live in `src/lib`.
-* Shared types go in `frontend/src/lib/types.ts`.
-* Shared constants go in `frontend/src/lib/storageKeys.ts` (and similar files in `src/lib` when needed).
-* Before creating new definitions, check `src/lib` and reuse what already exists.
-
-## File Naming Conventions
-
-Keep file names predictable and consistent:
-
-* Use `index.tsx` for a component entry file and `styles.ts` for its styled definitions.
-* Use `PascalCase` folder names for components and pages (for example: `CodeViewer`, `CheckerMode`).
-* Use `camelCase` for utility/lib files (for example: `storageKeys.ts`).
-* Use descriptive names for hooks and tests (for example: `useSomething.ts`, `ComponentName.test.tsx`).
-
-## Accessibility
+### Accessibility
 
 Build accessibility in by default:
 
-* Use semantic HTML and MUI components that provide built-in accessibility support.
-* Ensure all interactive elements are keyboard accessible and have visible focus states.
-* Add accessible names for controls (`aria-label`, `aria-labelledby`, or visible text labels).
-* Keep color contrast readable; do not rely on color alone to communicate status.
-   * This website is good for checking colour contrast: https://webaim.org/resources/contrastchecker/
-* Provide alt text for meaningful images and icons, and hide decorative icons from screen readers.
-* For dialogs, accordions, and navigation, verify correct ARIA relationships and focus behavior.
+- Use semantic HTML and MUI components that provide built-in accessibility support.
+- Ensure interactive elements are keyboard accessible and have visible focus states.
+- Add accessible names for controls (`aria-label`, `aria-labelledby`, or visible text labels).
+- Keep color contrast readable; do not rely on color alone to communicate status.
+- Provide alt text for meaningful images and icons, and hide decorative icons from screen readers.
+- For dialogs, accordions, and navigation, verify correct ARIA relationships and focus behavior.
 
 Quick check before merging:
 
-* Navigate key flows using keyboard only (Tab, Shift+Tab, Enter, Space, Escape).
-* Confirm screen reader labels are present for key actions.
-* Validate error and success states are understandable without color cues.
-* In Chrome, open DevTools and run **Lighthouse > Accessibility > Analyze page load** for a quick built-in audit.
-* In Chrome DevTools, inspect a text element and hover the contrast indicator in the color picker to see the current contrast ratio.
+- Navigate key flows using keyboard only (Tab, Shift+Tab, Enter, Space, Escape).
+- Confirm screen reader labels are present for key actions.
+- Validate error and success states are understandable without color cues.
+- In Chrome, run Lighthouse accessibility analysis on page load.
+- In Chrome DevTools, inspect text contrast in the color picker contrast indicator.
 
-## Launching the frontend
+### i18n
 
-### Option 1: Via the CLI (recommended)
+The frontend uses `i18next` with `react-i18next` and currently ships with English resources.
 
-From the project root that you wish to validate your adherence to clean architecture (or anywhere after `npm link`):
+#### Where translation files live
 
-```bash
-cave start
+- i18n setup: `frontend/src/i18n/config.ts`
+- Locale files: `frontend/src/i18n/locales/en/*.json`
+- Each JSON file is a namespace (for example: `home.json`, `checker.json`, `common.json`).
+
+#### How to add new translation keys
+
+1. Choose the correct namespace file in `frontend/src/i18n/locales/en`.
+2. Add the key in nested JSON form (group by feature/component).
+3. If you create a brand new namespace file, import it in `frontend/src/i18n/config.ts` and register it in `resources.en`.
+4. Use the key from components with `useTranslation('<namespace>')`.
+
+Example JSON (`frontend/src/i18n/locales/en/home.json`):
+
+```json
+{
+   "cards": {
+      "checker": {
+         "title": "Checker Mode",
+         "description": "Validate architecture violations in your project"
+      }
+   }
+}
 ```
 
-e.g. from the package root:
+#### How to use `useTranslation` in components
 
-```bash
-cave start clean-architecture-visualizer
+```tsx
+import { useTranslation } from 'react-i18next';
+
+export default function Example() {
+   const { t } = useTranslation('home');
+   return <h2>{t('cards.checker.title')}</h2>;
+}
 ```
 
-This will:
+Current codebase patterns:
 
-1. Read the directory
-2. Start the Vite dev server for this React app (port 5173)
-3. Open your browser to `http://localhost:5173`
+- Simple string translation with `t(...)` in page/components.
+- Rich text translation with `<Trans />` when markup is needed inside localized content.
 
-### Option 2: Run the dev server manually
+#### i18n initialization notes
 
-If you want to see the frontend without connecting to any backend endpoints, and instead use the MSW data:
+- Ensure `frontend/src/i18n/config.ts` is imported by pages/components that require translations (existing pages already follow this pattern).
+- `fallbackLng` is set to `en`.
+- Test mode supports `lng=cimode` via query parameter or `VITE_TEST_MODE=true` for deterministic test text behavior.
 
-1. Install dependencies (from this directory):
+#### Key naming guidelines
 
-   ```bash
-   cd frontend
-   npm install
-   ```
-
-2. Start the dev server:
-
-   ```bash
-   npm run dev
-   ```
-
-3. Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-### Option 3: Build and preview production
-
-```bash
-cd frontend
-npm install
-npm run build
-npm run preview
-```
-
-Then open the URL shown (e.g. `http://localhost:5173`).
-
-
-## Command Map
-
-The following scripts are defined for development, testing, and deployment:
-
-| Command | Description |
-| :--- | :--- |
-| `npm run dev` | Starts the Vite development server at `http://localhost:5173`. |
-| `npm run build` | Compiles the TypeScript code and minifies assets for production. |
-| `npm run preview` | Serves the local production build for final verification. |
-| `npm run test:unit` | Executes the Vitest suite to verify individual components and logic. |
-| `npm run test:e2e` | Launches Playwright to perform full end-to-end browser testing. |
-| `npm run test:e2e --ui ` | Launches Playwright with UI to perform full end-to-end browser testing. |
-
+- Prefer feature-scoped keys such as `cards.checker.title` instead of flat keys.
+- Keep key names stable and descriptive; update values more often than key identifiers.
+- Reuse existing keys in `common.json` for shared labels/buttons before creating duplicates.
 
