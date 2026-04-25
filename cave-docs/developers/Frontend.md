@@ -16,20 +16,25 @@ This section is for getting the app running quickly and making your first change
 
 ### Quick start
 
-1. Install dependencies:
+1. Use Node.js `20.19.0` or later. Verify your local versions before installing dependencies:
+   ```bash
+   node --version
+   npm --version
+
+2. Install dependencies:
 
    ```bash
    cd clean-architecture-visualizer/frontend
    npm install
    ```
 
-2. Start the frontend:
+3. Start the frontend:
 
    ```bash
    npm run dev
    ```
 
-3. Open [http://localhost:5173](http://localhost:5173).
+4. Open [http://localhost:5173](http://localhost:5173).
 
 ### Launching options
 
@@ -41,17 +46,12 @@ From the project root that you wish to validate your adherence to clean architec
 cave start
 ```
 
-For example, from this repo root:
-
-```bash
-cave start clean-architecture-visualizer
-```
-
 This will:
 
 1. Read the directory
-2. Start the Vite dev server (default port 5173)
-3. Open your browser to `http://localhost:5173`
+2. Start the Express server on port `3131`
+3. Start the Vite dev server on port `5173` in `--mode backend` and proxy it behind the Express server
+4. Open your browser to `http://localhost:3131`
 
 #### Option 2: Run frontend only with mock data (MSW)
 
