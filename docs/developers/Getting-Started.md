@@ -18,14 +18,14 @@ git clone https://github.com/<your-username>/Clean-Architecture-Visualizer.git
 cd Clean-Architecture-Visualizer
 
 # Set the original repo as upstream
-git remote add upstream https://github.com/paulgries/Clean-Architecture-Visualizer.git
+git remote add upstream https://github.com/CA-Visualizer-for-Education/Clean-Architecture-Visualizer.git
 
 # Verify your remotes
 git remote -v
 # origin    https://github.com/<your-username>/Clean-Architecture-Visualizer.git (fetch)
 # origin    https://github.com/<your-username>/Clean-Architecture-Visualizer.git (push)
-# upstream  https://github.com/paulgries/Clean-Architecture-Visualizer.git (fetch)
-# upstream  https://github.com/paulgries/Clean-Architecture-Visualizer.git (push)
+# upstream  https://github.com/CA-Visualizer-for-Education/Clean-Architecture-Visualizer.git (fetch)
+# upstream  https://github.com/CA-Visualizer-for-Education/Clean-Architecture-Visualizer.git (push)
 ```
 
 ## 2. Working with Branches & Remotes
