@@ -7,6 +7,8 @@ import { useCaseGraph } from "../../entity/useCaseGraph.js";
 import type { EdgeStorage, FileStorage, NodeStorage } from "../../types/sessionData.js";
 import type { cleanLayer } from "../../types/cleanLayer.js";
 import { GraphVerificationOutputData } from "./graphVerificationOutputData.js";
+import type { GraphVerificationInputData } from "./graphVerificationInputData.js";
+import type { GraphVerificationOutputBoundary } from "./graphVerificationOutputBoundary.js";
 
 export class GraphVerificationInteractor implements GraphVerificationInputBoundary {
     private readonly internalDirectories = [
@@ -25,24 +27,24 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
     private readonly externalFilePaths = new Map<string, string>();
 
     // The node of files <File Name, Node>
-    private readonly externalNodes: Record<string, cleanNode> = {};
-
-    private toCommandLine: boolean = false;
+    private readonly externalNodes : Record<string, cleanNode> = {};
     private outputData: GraphVerificationOutputData;
 
     constructor(
         private readonly fileAccess: FileAccessInterface,
         private readonly cleanArchInfoAccess: CleanArchInfoAccessInterface,
         private readonly db: SessionDBAccessInterface,
+        private readonly presenter: GraphVerificationOutputBoundary,
         private readonly useCaseGraphList: useCaseGraph[] = [],
         outputData: GraphVerificationOutputData = new GraphVerificationOutputData(),
     ) {
         this.outputData = outputData;
     }
 
-    async execute(): Promise<void> {
+    async execute(inputData: GraphVerificationInputData): Promise<void> {
         // restart db
         this.db.resetDB();
+        const formatForCLI = inputData.isToCommandLine()
 
         // main use case logic
         await this.buildFilePaths();
@@ -50,8 +52,9 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
         await this.developOutNeighbours();
         await this.verifyOutNeighbours();
         await this.populateDatabase();
-        if (this.toCommandLine) {
+        if (formatForCLI) {
             this.prepareOutput();
+            this.presenter.prepareSuccessView(this.outputData)
         }
     }
 
@@ -418,9 +421,5 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
             }
         }
         this.outputData.setOutputData(lines, lineColours);
-    }
-
-    toggleCommandLine(): void {
-        this.toCommandLine = !this.toCommandLine;
     }
 }
