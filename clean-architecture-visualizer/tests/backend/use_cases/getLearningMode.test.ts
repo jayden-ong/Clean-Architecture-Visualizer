@@ -2,16 +2,18 @@ import { describe, it, expect} from '@jest/globals';
 
 import { GetLearningModeInteractor } from "../../../src/use_case/getLearningMode/getLearningModeInteractor.js";
 import { CleanArchAccess } from "../../../src/data_access/cleanArchInfoAccess.js";
-import type { GetLearningModeOutputData } from "../../../src/use_case/getLearningMode/getLearningModeOutputData.js";
+import { GetLearningModeOutputData } from "../../../src/use_case/getLearningMode/getLearningModeOutputData.js";
 
 const genericCleanArchAccess = new CleanArchAccess();
 
-// Minimal mock for output data
 function makeOutputData(): GetLearningModeOutputData & { result: any } {
-    return {
-        result: undefined,
-        setOutputData(data: any) { this.result = data; }
-    };
+    const output = new GetLearningModeOutputData();
+    Object.defineProperty(output, "result", {
+        get(): any {
+            return output.getOutputData();
+        },
+    });
+    return output as GetLearningModeOutputData & { result: any };
 }
 
 describe("GetLearningModeInteractor", () => {

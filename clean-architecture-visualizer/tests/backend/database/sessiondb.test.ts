@@ -71,12 +71,20 @@ describe("SessionDB", () => {
         });
 
         it("restores nested data correctly", () => {
-            db.set("files", { "User.java": "src/entities/User.java" });
+            const files: SessionData["files"] = [
+                {
+                    filePath: "src/entities/User.java",
+                    fileType: "java",
+                    layer: "enterpriseBusinessRules",
+                    node: "entities",
+                },
+            ];
+            db.set("files", files);
 
             const db2 = new SessionDB<SessionData>();
             db2.load();
 
-            expect(db2.get("files")).toEqual({ "User.java": "src/entities/User.java" });
+            expect(db2.get("files")).toEqual(files);
         });
     });
 
