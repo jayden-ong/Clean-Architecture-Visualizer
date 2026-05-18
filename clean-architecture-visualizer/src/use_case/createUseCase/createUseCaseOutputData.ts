@@ -1,13 +1,7 @@
 export class CreateUseCaseOutputData {
+    constructor(private readonly useCase: string) {}
 
-    private apiOutputData?: boolean;
-
-    setOutputData(outputData: boolean) {
-        this.apiOutputData = outputData;
-    }
-    
-    getOutputData(): boolean {
-        if (this.apiOutputData) return this.apiOutputData;
-        return false;
+    getUseCase(): string {
+        return this.useCase;
     }
 }

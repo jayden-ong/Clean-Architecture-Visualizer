@@ -1,28 +1,19 @@
+import path from "node:path";
 import type { FileAccessInterface } from "../../data_access/fileAccessInterface.js";
 import type { CreateUseCaseInputBoundary } from "./createUseCaseInputBoundary.js";
-import { CreateUseCaseInputData } from "./createUseCaseInputData.js";
+import type { CreateUseCaseInputData } from "./createUseCaseInputData.js";
+import type { CreateUseCaseOutputBoundary } from "./createUseCaseOutputBoundary.js";
 import { CreateUseCaseOutputData } from "./createUseCaseOutputData.js";
-import path from "path";
-import chalk from "chalk";
 
-export class CreateUseCaseinteractor implements CreateUseCaseInputBoundary {
-    private readonly fileAccess: FileAccessInterface;
-    private inputData: CreateUseCaseInputData;
-    private readonly outputData: CreateUseCaseOutputData;
-
+export class CreateUseCaseInteractor implements CreateUseCaseInputBoundary {
     constructor(
-        fileAccess: FileAccessInterface,
-        inputData: CreateUseCaseInputData = new CreateUseCaseInputData(""),
-        outputData: CreateUseCaseOutputData = new CreateUseCaseOutputData(),
-    ) {
-        this.fileAccess = fileAccess;
-        this.inputData = inputData;
-        this.outputData = outputData;
-    }
+        private readonly fileAccess: FileAccessInterface,
+        private readonly presenter: CreateUseCaseOutputBoundary,
+    ) {}
 
-    async execute(): Promise<void> {
+    async execute(createUseCaseInputData: CreateUseCaseInputData): Promise<void> {
         try {
-            const useCaseName = this.inputData.getUseCaseName().split(" ").join("");
+            const useCaseName = createUseCaseInputData.getUseCaseName().split(" ").join("");
             const currPath = await this.fileAccess.getCurrentPath();
 
             // Find base directories
@@ -30,7 +21,10 @@ export class CreateUseCaseinteractor implements CreateUseCaseInputBoundary {
             const interfaceAdapterDir = await this.fileAccess.bfsFindDir(currPath, "interface_adapter");
 
             if (!useCaseDir || !interfaceAdapterDir) {
-                throw new Error("Could not find use_case or interface_adapter, try initiating project first.");
+                this.presenter.showFailView(
+                    "Could not find use_case or interface_adapter, try initiating project first.",
+                );
+                return;
             }
 
             const targetUseCasePath = path.join(useCaseDir, useCaseName);
@@ -40,7 +34,8 @@ export class CreateUseCaseinteractor implements CreateUseCaseInputBoundary {
             const useCaseExists = await this.fileAccess.exists(targetUseCasePath);
             const interfaceExists = await this.fileAccess.exists(targetInterfacePath);
             if (useCaseExists || interfaceExists) {
-                throw new Error(`Usecase ${useCaseName} already exists.`);
+                this.presenter.showFailView(`Usecase ${useCaseName} already exists.`);
+                return;
             }
 
             // Create use case
@@ -64,16 +59,12 @@ export class CreateUseCaseinteractor implements CreateUseCaseInputBoundary {
             await createJavaFile(targetInterfacePath, "Controller");
             await createJavaFile(targetInterfacePath, "Presenter");
 
-            this.outputData.setOutputData(true);
+            const createUseCaseOutputData = new CreateUseCaseOutputData(useCaseName);
+            this.presenter.showSuccessView(createUseCaseOutputData);
         } catch (error) {
             if (error instanceof Error) {
-                console.log(chalk.red(error.message));
+                this.presenter.showFailView(error.message);
             }
-            this.outputData.setOutputData(false);
         }
-    }
-
-    newUseCase(inputData: string): void {
-        this.inputData = new CreateUseCaseInputData(inputData);
     }
 }

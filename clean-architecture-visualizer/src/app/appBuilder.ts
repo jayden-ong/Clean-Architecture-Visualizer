@@ -13,9 +13,9 @@ import type { InitProjectInputBoundary } from "../use_case/initProject/initProje
 import type { InitProjectContoller } from "../interface_adapter/intiProject/initProjectContoller.js";
 import type { CreateUseCaseInputBoundary } from "../use_case/createUseCase/createUseCaseInputBoundary.js";
 import type { CreateUseCaseController } from "../interface_adapter/createUseCase/createUseCaseController.js";
-import { CreateUseCaseInputData } from "../use_case/createUseCase/createUseCaseInputData.js";
-import { CreateUseCaseOutputData } from "../use_case/createUseCase/createUseCaseOutputData.js";
 import { InitProjectOutputData } from "../use_case/initProject/initProjectOutputData.js";
+import { CreateUseCaseInteractor } from "../use_case/createUseCase/createUseCaseInteractor.js";
+import { CreateUseCasePresenter } from "../interface_adapter/createUseCase/createUseCasePresenter.js";
 
 export class AppBuilder {
     private fileAccess?: FileAccess;
@@ -70,17 +70,12 @@ export class AppBuilder {
         return this;
     }
 
-    buildCreateUseCaseInteractor(
-        InteractorClass: new (
-            fileAccess: FileAccess,
-            inputData?: CreateUseCaseInputData,
-            outputData?: CreateUseCaseOutputData
-        ) => CreateUseCaseInputBoundary
-    ): this {
+    buildCreateUseCaseInteractor(): this {
         if (!this.fileAccess) {
             throw new Error("FileAccess must be set before building CreateUseCaseInteractor");
         }
-        this.createUseCaseInteractor = new InteractorClass(this.fileAccess);
+        const createUseCasePresenter = new CreateUseCasePresenter();
+        this.createUseCaseInteractor = new CreateUseCaseInteractor(this.fileAccess, createUseCasePresenter);
         return this;
     }
 
@@ -130,10 +125,7 @@ export class AppBuilder {
         if (!this.createUseCaseInteractor) {
             throw new Error("CreateUseCaseInteractor must be built before controller");
         }
-        
-        this.createUseCaseController = new ControllerClass(
-            this.createUseCaseInteractor
-            );
+        this.createUseCaseController = new ControllerClass(this.createUseCaseInteractor);
         return this;
     }
 
@@ -181,8 +173,6 @@ export class AppBuilder {
     }
 
     runCreateUseCase(name: string) {
-        this.createUseCaseInteractor?.newUseCase(name);
-        this.createUseCaseController?.execute();
-        console.log(chalk.green(`Usecase ${name} has been created.`));
+        this.createUseCaseController?.execute(name);
     }
 }
