@@ -8,7 +8,7 @@ export type UseCaseInfoResponse = {
     interaction_name: string;
     nodes: UseCaseNodeResponse[];
     edges: UseCaseEdgeResponse[];
-    decoupling?: boolean;
+    decoupling: boolean;
 };
 
 type UseCaseNodeResponse = {
@@ -48,6 +48,7 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
             interaction_name: useCase.name,
             nodes: nodes,
             edges: edges,
+            decoupling: false
         };
 
         const allNodes = this.db.getAllNodes()
