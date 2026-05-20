@@ -18,8 +18,14 @@ export class InitProjectInteractor implements InitProjectInputBoundary{
 
     async execute(): Promise<void> {
         try {
+            
             let currPath = await this.fileAccess.getCurrentPath();
             currPath = path.join(currPath, "src")
+
+            // 0. Check if any use_case files have already been initialized
+            if (await this.fileAccess.bfsFindDir(currPath, 'use_case')) {
+                throw new Error("project already initialized")
+            }
             
             // 1. Define base paths using path.join for cross-platform support
             const javaPath = path.join(currPath, "main", "java");

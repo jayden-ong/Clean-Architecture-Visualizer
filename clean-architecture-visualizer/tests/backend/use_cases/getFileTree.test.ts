@@ -2,18 +2,20 @@ import { describe, it, expect, beforeEach} from '@jest/globals';
 
 import { GetFileTreeInteractor } from "../../../src/use_case/getFileTree/getFileTreeInteractor.js";
 import { SessionDBAccess } from "../../../src/data_access/sessionDBAccess.js";
-import type { GetFileTreeOutputData } from "../../../src/use_case/getFileTree/getFileTreeOuptutData.js";
+import { GetFileTreeOutputData } from "../../../src/use_case/getFileTree/getFileTreeOuptutData.js";
 import type { FileStorage } from "../../../src/types/sessionData.js";
 import type { FileTreeNode } from "../../../src/types/fileTreeNode.js";
 
 let genericDBAccess = new SessionDBAccess();
 
-// mock for output data
 function makeOutputData(): GetFileTreeOutputData & { result: FileTreeNode | undefined } {
-    return {
-        result: undefined,
-        setOutputData(data: FileTreeNode) { this.result = data; }
-    };
+    const output = new GetFileTreeOutputData();
+    Object.defineProperty(output, "result", {
+        get(): FileTreeNode | undefined {
+            return output.getOutputData() as FileTreeNode;
+        },
+    });
+    return output as GetFileTreeOutputData & { result: FileTreeNode | undefined };
 }
 
 describe("GetFileTreeInteractor", () => {
@@ -38,8 +40,8 @@ describe("GetFileTreeInteractor", () => {
             const mockFile: FileStorage = {
                 filePath: "project/src/entities/User.java",
                 fileType: "java",
-                layer: "entities",
-                node: "UserNode",
+                layer: "enterpriseBusinessRules",
+                node: "entities",
             };
             genericDBAccess.upsertFile(mockFile);
 
@@ -61,8 +63,18 @@ describe("GetFileTreeInteractor", () => {
         });
 
         it("shares the same directory node for multiple files in that directory", async () => {
-            const file1: FileStorage = { filePath: "src/util/A.java", fileType: "java", layer: "entities", node: "A" };
-            const file2: FileStorage = { filePath: "src/util/B.java", fileType: "java", layer: "entities", node: "B" };
+            const file1: FileStorage = {
+                filePath: "src/util/A.java",
+                fileType: "java",
+                layer: "enterpriseBusinessRules",
+                node: "entities",
+            };
+            const file2: FileStorage = {
+                filePath: "src/util/B.java",
+                fileType: "java",
+                layer: "enterpriseBusinessRules",
+                node: "entities",
+            };
             
             genericDBAccess.upsertFile(file1);
             genericDBAccess.upsertFile(file2);

@@ -9,5 +9,6 @@ export interface FileAccessInterface {
     createDirectory(filePath: string): Promise<void>;
     getCurrentPath(): Promise<string>;
     bfsFindDir(curr: string, target: string): Promise<string | null>;
+    exists(path: string): Promise<boolean>;
     createFile(filePath: string, content?: string): Promise<void>;
 }

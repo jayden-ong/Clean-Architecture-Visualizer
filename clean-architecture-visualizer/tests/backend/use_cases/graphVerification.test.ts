@@ -10,6 +10,38 @@ const genericFileAccess = new FileAccess();
 const genericNeighbourAccess = new CleanArchAccess();
 const genericDBAccess = new SessionDBAccess();
 
+function makeUseCaseGraphs(types: string[]): useCaseGraph[] {
+    let useCaseGraphs: useCaseGraph[] = [];
+    types.forEach(type => {
+        switch (type) {
+            case "empty":
+                useCaseGraphs.push(new useCaseGraph("empty"));
+                break;
+            case "good":
+                const goodUseCase = new useCaseGraph("good");
+                goodUseCase.setNodeNeighbour("useCaseInteractor", "entities");
+                goodUseCase.setNodeNeighbour("dataAccess", "database");
+                goodUseCase.setNodeNeighbour("view", "viewModel");
+                goodUseCase.setNodeNeighbour("view", "controller");
+                useCaseGraphs.push(goodUseCase);
+                break;
+            case "single":
+                const singleViolation = new useCaseGraph("single");
+                singleViolation.setNodeNeighbour("view", "viewModel");
+                singleViolation.setNodeNeighbour("view", "entities");
+                useCaseGraphs.push(singleViolation);
+                break;
+            case "multiple":
+                const multipleViolations = new useCaseGraph("multiple");
+                multipleViolations.setNodeNeighbour("entities", "view");
+                multipleViolations.setNodeNeighbour("controller", "entities");
+                useCaseGraphs.push(multipleViolations);
+                break;
+        }
+    });
+    return useCaseGraphs;
+}
+
 describe("Ensures that resolveLayer correctly identifies layers from their file path", () => {
 
     const genericInteractor = new GraphVerificationInteractor(
@@ -49,6 +81,45 @@ describe("Ensures that resolveLayer correctly identifies layers from their file 
     );
 });
 
+describe("Ensures that resolveLayer correctly identifies layers from their file path, snake_case", () => {
+
+    const genericInteractor = new GraphVerificationInteractor(
+        genericFileAccess,
+        genericNeighbourAccess,
+        genericDBAccess
+    );
+
+    const testCases: [string, string][] = [
+        ["frameworksAndDrivers",    "/src/views/test/test_view.ts"],
+        ["interfaceAdapters",       "/src/views/test/test_view_model.ts"],
+        ["frameworksAndDrivers",    "/src/database/test/test_database.ts"],
+        ["enterpriseBusinessRules", "/src/entity/test/test_entities.ts"],
+        ["applicationBusinessRules","/src/data_access/test/test_access_interface.ts"],
+        ["frameworksAndDrivers",    "/src/data_access/test/test_access.ts"],
+        ["interfaceAdapters",       "/src/interface_adapters/test/test_controller.ts"],
+        ["interfaceAdapters",       "/src/interface_adapters/test/test_presenter.ts"],
+        ["applicationBusinessRules","/src/use_case/test/test_input_boundary.ts"],
+        ["applicationBusinessRules","/src/use_case/test/test_input_data.ts"],
+        ["applicationBusinessRules","/src/use_case/test/test_output_boundary.ts"],
+        ["applicationBusinessRules","/src/use_case/test/test_output_data.ts"],
+        ["applicationBusinessRules","/src/use_case/test/test_interactor.ts"],
+    ];
+
+    it.each(testCases)(
+        "resolves '%s' from path '%s'", (expectedLayer, path) => {
+            const result = (genericInteractor as any).resolveLayer(path);
+            expect(result).toBe(expectedLayer);
+        }
+    );
+
+    it.each(["/src/types/testTypes.ts", "/src/.gitkeep"])(
+        "returns undefined from the path %s", (path) => {
+            const result = (genericInteractor as any).resolveLayer(path);
+            expect(result).toBeUndefined();
+        }
+    );
+});
+
 describe("Ensures that verifyOutNeighbours correctly classifies the number of Clean violations", () => {
 
     function getAllViolations(graphs: useCaseGraph[]): number {
@@ -59,42 +130,13 @@ describe("Ensures that verifyOutNeighbours correctly classifies the number of Cl
         return result;
     }
 
-    const emptyUseCase = new useCaseGraph("empty");
-    const goodUseCase = new useCaseGraph("good");
-    const singleViolation = new useCaseGraph("single");
-    const multipleViolations = new useCaseGraph("multiple");
-
-    const allUseCaseGraphs = [
-        emptyUseCase,
-        goodUseCase,
-        singleViolation,
-        multipleViolations
-    ];
-
-    afterEach(async () => {
-        allUseCaseGraphs.forEach(graph => {
-            graph.resetViolations();
-        });
-    });
-
-    goodUseCase.setNodeNeighbour("useCaseInteractor", "entities");
-    goodUseCase.setNodeNeighbour("dataAccess", "database");
-    goodUseCase.setNodeNeighbour("view", "viewModel");
-    goodUseCase.setNodeNeighbour("view", "controller");
-
-    singleViolation.setNodeNeighbour("view", "viewModel");
-    singleViolation.setNodeNeighbour("view", "entities");
-
-    multipleViolations.setNodeNeighbour("entities", "view");
-    multipleViolations.setNodeNeighbour("controller", "entities");
-
     const testCases = [
-        ["Empty usecase has 0 violations",                                  [emptyUseCase],                         0],
-        ["Use case with no violations reports 0 violations",                [goodUseCase],                          0],
-        ["Use case with 1 violation reports 1 violation",                   [singleViolation],                      1],
-        ["Use case with 2 violations reports 2 violations",                 [multipleViolations],                   2],
-        ["Multiple usecases with violations are properly reported",         [singleViolation, multipleViolations],  3],
-        ["Only use cases with violations report violations",                allUseCaseGraphs,                       3],
+        ["Empty usecase has 0 violations",                              makeUseCaseGraphs(["empty"]),                                   0],
+        ["Use case with no violations reports 0 violations",            makeUseCaseGraphs(["good"]),                                    0],
+        ["Use case with 1 violation reports 1 violation",               makeUseCaseGraphs(["single"]),                                  1],
+        ["Use case with 2 violations reports 2 violations",             makeUseCaseGraphs(["multiple"]),                                2],
+        ["Multiple usecases with violations are properly reported",     makeUseCaseGraphs(["single", "multiple"]),                      3],
+        ["Only use cases with violations report violations",            makeUseCaseGraphs(["empty", "good", "single", "multiple"]),     3],
     ];
 
     it.each(testCases)(
@@ -114,25 +156,13 @@ describe("Ensures that verifyOutNeighbours correctly classifies the number of Cl
 
 describe("Ensures that populateDatabase correctly populates the database", () => {
 
-    const emptyUseCase = new useCaseGraph("empty");
-    const singleViolation = new useCaseGraph("single");
-    const multipleViolations = new useCaseGraph("multiple");
-
-    singleViolation.setNodeNeighbour("view", "entities");           // 1 violation
-    multipleViolations.setNodeNeighbour("entities", "view");        // 2 violations
-    multipleViolations.setNodeNeighbour("controller", "entities");
-
-    afterEach(() => {
-        [emptyUseCase, singleViolation, multipleViolations].forEach(g => g.resetViolations());
-    });
-
     describe("use case and violation counts", () => {
 
         const testCases: [string, useCaseGraph[], number, number][] = [
-            ["Empty use case list sets 0 use cases and 0 violations",               [],                                     0, 0],
-            ["Single use case with no violations",                                  [emptyUseCase],                         1, 0],
-            ["Single use case with 1 violation",                                    [singleViolation],                      1, 1],
-            ["Multiple use cases with violations are summed correctly",             [singleViolation, multipleViolations],  2, 3],
+            ["Empty use case list sets 0 use cases and 0 violations",               [],                                             0, 0],
+            ["Single use case with no violations",                                  makeUseCaseGraphs(["empty"]),                   1, 0],
+            ["Single use case with 1 violation",                                    makeUseCaseGraphs(["single"]),                  1, 1],
+            ["Multiple use cases with violations are summed correctly",             makeUseCaseGraphs(["single", "multiple"]),      2, 3],
         ];
 
         it.each(testCases)(
@@ -161,7 +191,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
-                [emptyUseCase, singleViolation]
+                makeUseCaseGraphs(["empty", "single"])
             );
             await (interactor as any).populateDatabase();
 
@@ -178,7 +208,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
-                [singleViolation]
+                makeUseCaseGraphs(["single"])
             );
             await (interactor as any).verifyOutNeighbours();
             await (interactor as any).populateDatabase();
@@ -196,7 +226,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
-                [emptyUseCase]
+                makeUseCaseGraphs(["empty"])
             );
             await (interactor as any).verifyOutNeighbours();
             await (interactor as any).populateDatabase();
@@ -211,7 +241,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
-                [singleViolation]
+                makeUseCaseGraphs(["single"])
             );
             await (interactor as any).verifyOutNeighbours();
             await (interactor as any).populateDatabase();
@@ -266,7 +296,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
-                [singleViolation]
+                makeUseCaseGraphs(["single"])
             );
             await (interactor as any).verifyOutNeighbours();
             await (interactor as any).populateDatabase();

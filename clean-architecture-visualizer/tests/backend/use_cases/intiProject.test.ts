@@ -82,4 +82,17 @@ describe("InitProjectInteractor", () => {
         expect(mockOutputData.setOutputData).toHaveBeenCalledWith(false);
         expect(mockFileAccess.createDirectory).not.toHaveBeenCalled();
     });
+
+    it("should fail if already initialized", async () => {
+        // Arrange
+        mockFileAccess.getCurrentPath.mockResolvedValue(ROOT_PATH)
+        mockFileAccess.bfsFindDir.mockResolvedValue(`${ROOT_PATH}/src/main/java/use_case`)
+        
+        // Act
+        await interactor.execute()
+        
+        // Assert
+        expect(mockOutputData.setOutputData).toHaveBeenCalledWith(false)
+        expect(mockFileAccess.createDirectory).not.toHaveBeenCalled()
+    });
 });

@@ -1,10 +1,9 @@
-import fs from 'fs/promises';
-import path from 'path';
+import fs from "fs/promises";
+import path from "path";
 
 import type { FileAccessInterface } from "./fileAccessInterface.js";
 
 export class FileAccess implements FileAccessInterface {
-
     /**
      * Find the use case folder and collect the name of each use case.
      * @returns A list of the names of each use case.
@@ -21,7 +20,7 @@ export class FileAccess implements FileAccessInterface {
             withFileTypes: true,
         });
 
-        return useCases.filter(e => e.isDirectory()).map(e => e.name);
+        return useCases.filter((e) => e.isDirectory()).map((e) => e.name);
     }
 
     /**
@@ -79,7 +78,7 @@ export class FileAccess implements FileAccessInterface {
 
         while (queue.length > 0) {
             const currentPath = queue.shift()!;
-            
+
             if (visited.has(currentPath)) continue;
             visited.add(currentPath);
 
@@ -107,10 +106,7 @@ export class FileAccess implements FileAccessInterface {
      * @param target the name of the target directory (ending location).
      * @returns A list of the directories found within the target directory.
      */
-    async findDirectory(
-    curr: string,
-    target: string
-    ): Promise<string | null> {
+    async findDirectory(curr: string, target: string): Promise<string | null> {
         const entries = await fs.readdir(curr, { withFileTypes: true });
 
         for (const entry of entries) {
@@ -139,17 +135,16 @@ export class FileAccess implements FileAccessInterface {
         let result: string[] = [];
 
         try {
-            const fileContent: string = await fs.readFile(filePath, { encoding: 'utf-8' });
+            const fileContent: string = await fs.readFile(filePath, { encoding: "utf-8" });
             const fileLines = fileContent.split("\n");
-            fileLines.forEach(line => {
+            fileLines.forEach((line) => {
                 if (line.startsWith("import ")) {
                     line = line.trim();
                     const lastSpace = line.lastIndexOf(" ");
                     result.push(line.substring(lastSpace + 1));
                 }
             });
-        }
-        catch {
+        } catch {
             console.log("The file: " + filePath + " could not be found");
             return [];
         }
@@ -158,8 +153,8 @@ export class FileAccess implements FileAccessInterface {
     }
 
     /**
-     * Get the project name, this is either the directory BEFORE "src", or if the 
-     * process is running in a directory ABOVE "src" we assume that we are in the 
+     * Get the project name, this is either the directory BEFORE "src", or if the
+     * process is running in a directory ABOVE "src" we assume that we are in the
      * project directory.
      * @returns a string representing the project name.
      */
@@ -174,15 +169,13 @@ export class FileAccess implements FileAccessInterface {
     /**
      * Get the file content of path as a single string.
      * @param filePath is a path to a valid file
-     * @returns 
+     * @returns
      */
     async getFileContent(filePath: string): Promise<string> {
-        
         try {
-            const fileContent: string = await fs.readFile(filePath, { encoding: 'utf-8' });
+            const fileContent: string = await fs.readFile(filePath, { encoding: "utf-8" });
             return fileContent;
-        }
-        catch {
+        } catch {
             console.log("The file: " + filePath + " could not be found");
             return "";
         }
@@ -198,22 +191,20 @@ export class FileAccess implements FileAccessInterface {
     async getFileSnippet(filePath: string, target: string): Promise<string | undefined> {
         const content = await this.getFileContent(filePath);
         if (!content) return undefined;
- 
+
         const lines = content.split("\n");
-        const importLines = lines.filter(line => line.trimStart().startsWith("import "));
- 
+        const importLines = lines.filter((line) => line.trimStart().startsWith("import "));
+
         if (!target) {
             // No target specified — return all import lines joined
             return importLines.length > 0 ? importLines.join("\n") : undefined;
         }
- 
-        const match = importLines.find(line =>
-            line.toLowerCase().includes(target.toLowerCase())
-        );
- 
+
+        const match = importLines.find((line) => line.toLowerCase().includes(target.toLowerCase()));
+
         return match?.trim() ?? undefined;
     }
- 
+
     /**
      * Find the 1-based line number of the first import line in a file that
      * references the given target name.
@@ -224,17 +215,30 @@ export class FileAccess implements FileAccessInterface {
     async getLineNumber(filePath: string, target: string): Promise<number | undefined> {
         const content = await this.getFileContent(filePath);
         if (!content) return undefined;
- 
+
         const lines = content.split("\n");
- 
+
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
             if (line.trimStart().startsWith("import ") && line.toLowerCase().includes(target.toLowerCase())) {
                 return i + 1; // 1-based line number
             }
         }
- 
+
         return undefined;
+    }
+
+    /**
+     * Check whether a file/directory at path exists or not.
+     * @param path the path of the file to be checked
+     */
+    async exists(path: string): Promise<boolean> {
+        try {
+            await fs.access(path);
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     /**

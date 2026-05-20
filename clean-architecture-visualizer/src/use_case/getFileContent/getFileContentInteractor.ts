@@ -24,7 +24,7 @@ export class GetFileContentInteractor implements GetFileContentInputBoundary {
         const result = {
             file_path: filePath,
             content: fileContent,
-            language: fileEntry.fileType ?? "not_java",
+            language: fileEntry.fileType ?? "unknown",
             layer: fileEntry.layer,
             Violation_words: [],
             lines_with_violations: []

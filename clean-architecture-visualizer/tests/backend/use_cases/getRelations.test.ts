@@ -2,7 +2,7 @@ import { GetRelationsInteractor } from "../../../src/use_case/getRelations/GetRe
 import { SessionDBAccess } from "../../../src/data_access/sessionDBAccess.js";
 import { FileAccess } from "../../../src/data_access/fileAccess.js";
 import type { GetRelationsInputData } from "../../../src/use_case/getRelations/GetRelationsInputData.js";
-import type { GetRelationsOutputData } from "../../../src/use_case/getRelations/GetRelationsOutputData.js";
+import { GetRelationsOutputData } from "../../../src/use_case/getRelations/GetRelationsOutputData.js";
 
 import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 
@@ -16,11 +16,13 @@ function makeInputData(filePath: string): GetRelationsInputData {
 }
 
 function makeOutputData(): GetRelationsOutputData & { result: any } {
-    return {
-        result: undefined,
-        setOutputData(data: any) { this.result = data; },
-        getOutputData() { return this.result; }
-    } as GetRelationsOutputData & { result: any };
+    const output = new GetRelationsOutputData();
+    Object.defineProperty(output, "result", {
+        get(): any {
+            return output.getOutputData();
+        },
+    });
+    return output as GetRelationsOutputData & { result: any };
 }
 
 describe("GetRelationsInteractor", () => {
@@ -112,8 +114,18 @@ describe("GetRelationsInteractor", () => {
             const targetPath = "src/entities/User.ts";
             const tsReferrer = "src/controller/UserController.ts";
 
-            genericDBAccess.upsertFile({ filePath: targetPath, fileType: "not_java", layer: "entities", node: "node" });
-            genericDBAccess.upsertFile({ filePath: tsReferrer, fileType: "not_java", layer: "interfaceAdapters", node: "node" });
+            genericDBAccess.upsertFile({
+                filePath: targetPath,
+                fileType: "not_java",
+                layer: "enterpriseBusinessRules",
+                node: "entities",
+            });
+            genericDBAccess.upsertFile({
+                filePath: tsReferrer,
+                fileType: "not_java",
+                layer: "interfaceAdapters",
+                node: "controller",
+            });
 
             // Mock getFileImports to return a match for "User"
             jest.spyOn(genericFileAccess, 'getFileImports').mockResolvedValue([
@@ -138,7 +150,12 @@ describe("GetRelationsInteractor", () => {
 
         it("ignores the target file itself even if it contains its own name", async () => {
             const path = "src/entities/User.java";
-            genericDBAccess.upsertFile({ filePath: path, fileType: "java", layer: "entities", node: "node" });
+            genericDBAccess.upsertFile({
+                filePath: path,
+                fileType: "java",
+                layer: "enterpriseBusinessRules",
+                node: "entities",
+            });
             
             jest.spyOn(genericFileAccess, 'getFileContent').mockResolvedValue("public class User { User() {} }");
 

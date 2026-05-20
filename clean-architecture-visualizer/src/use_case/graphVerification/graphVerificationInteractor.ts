@@ -8,7 +8,7 @@ import type { EdgeStorage, FileStorage, NodeStorage } from "../../types/sessionD
 import type { cleanLayer } from "../../types/cleanLayer.js";
 import { GraphVerificationOutputData } from "./graphVerificationOutputData.js";
 
-export class GraphVerificationInteractor implements GraphVerificationInputBoundary{
+export class GraphVerificationInteractor implements GraphVerificationInputBoundary {
     private readonly internalDirectories = [
         "use_case",
         "interface_adapter",
@@ -19,13 +19,13 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
         "data_access",
         "database",
     ]
-    
+
     // Paths are defined as <File Name, File Path>
     private readonly internalFilePaths = new Map<string, string>();
     private readonly externalFilePaths = new Map<string, string>();
 
     // The node of files <File Name, Node>
-    private readonly externalNodes : Record<string, cleanNode> = {};
+    private readonly externalNodes: Record<string, cleanNode> = {};
 
     private toCommandLine: boolean = false;
     private outputData: GraphVerificationOutputData;
@@ -87,7 +87,7 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
      * paths.
      */
     private async developOutNeighbours(): Promise<void> {
-        
+
         for (const graph of this.useCaseGraphList) {
             for (const [fileName, filePath] of graph.getFiles()) {
                 const fromNode = this.resolveNode(filePath);
@@ -140,7 +140,7 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
      * @returns 
      */
     private resolveNode(importPath: string): cleanNode | null {
-        importPath = importPath.toLowerCase();
+        importPath = importPath.toLowerCase().replace(/_/g, "");
         if (importPath.includes("viewmodel")) return "viewModel"; // must be verified before 'view'
         if (importPath.includes("view")) return "view";
         if (importPath.includes("database")) return "database";
@@ -163,7 +163,7 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
      * @returns 
      */
     private resolveLayer(importPath: string): cleanLayer | undefined {
-        importPath = importPath.toLowerCase();
+        importPath = importPath.toLowerCase().replace(/_/g, "");
         if (importPath.includes("viewmodel")) return "interfaceAdapters"; // must be verified before 'view'
         if (importPath.includes("view")) return "frameworksAndDrivers";
         if (importPath.includes("database")) return "frameworksAndDrivers";
@@ -224,21 +224,32 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
      */
     private buildFileStorageList(fileMap: Map<string, string>): FileStorage[] {
         const result: FileStorage[] = [];
- 
+
         for (const [, filePath] of fileMap) {
             const node = this.resolveNode(filePath);
             const layer = this.resolveLayer(filePath);
             if (!node || !layer) continue;
- 
+
             result.push({
                 filePath,
-                fileType: filePath.endsWith(".java") ? "java" : "not_java",
+                fileType: this.determineFileType(filePath),
                 layer,
                 node,
             });
         }
- 
+
         return result;
+    }
+
+    /**
+     * Helper function to return the fileType based on the filePath
+     */
+    private determineFileType(filePath: string): "java" | "python" | "javascript" | "typescript" | "unknown" {
+        if (filePath.endsWith(".java")) return "java";
+        if (filePath.endsWith(".py")) return "python";
+        if (filePath.endsWith(".js") || filePath.endsWith(".jsx")) return "javascript";
+        if (filePath.endsWith(".ts") || filePath.endsWith(".tsx")) return "typescript";
+        return "unknown";
     }
 
     private buildNodeStorageList(files: FileStorage[]): NodeStorage[] {
@@ -307,20 +318,20 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
     private buildEdgeStorageList(): EdgeStorage[] {
         const result: EdgeStorage[] = [];
         const seenIds = new Set<string>();
- 
+
         for (const uc of this.useCaseGraphList) {
             const violationSet = new Set<string>(
                 uc.getViolationEdges().map(([from, to]) => `${from}->${to}`)
             );
- 
+
             const neighbourMap = uc.getNeighbourMap();
- 
+
             for (const [fromNode, neighbours] of Object.entries(neighbourMap) as [cleanNode, cleanNode[]][]) {
                 for (const toNode of neighbours) {
                     const id = `${fromNode}->${toNode}`;
                     if (seenIds.has(id)) continue;
                     seenIds.add(id);
- 
+
                     result.push({
                         id,
                         source: fromNode,
@@ -331,10 +342,10 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
                 }
             }
         }
- 
+
         return result;
     }
- 
+
     /**
      * Fallback layer resolution by node type, for missing nodes that have no matching file.
      */
@@ -357,7 +368,7 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
             case "useCaseInteractor":
             case "dataAccessInterface":
                 return "applicationBusinessRules"
-                ;
+                    ;
             case "entities":
                 return "enterpriseBusinessRules";
         }
@@ -366,11 +377,11 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
     private async populateDatabase(): Promise<void> {
         const totalUseCases = this.useCaseGraphList.length;
         let violationCount = 0;
- 
+
         this.useCaseGraphList.forEach(useCase => {
             violationCount += useCase.getViolationCount();
         });
- 
+
         const files: FileStorage[] = [
             ...this.buildFileStorageList(this.internalFilePaths),
             ...this.buildFileStorageList(this.externalFilePaths),
@@ -378,7 +389,7 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
 
         const nodes: NodeStorage[] = this.buildNodeStorageList(files);
         const edges: EdgeStorage[] = this.buildEdgeStorageList();
- 
+
         this.db.setNumUseCases(totalUseCases);
         this.db.setNumViolations(violationCount);
         this.db.setUseCases(this.useCaseGraphList, files);

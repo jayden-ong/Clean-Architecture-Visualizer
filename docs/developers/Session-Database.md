@@ -56,7 +56,7 @@ Represents a single scanned file:
 | Field | Type | Description |
 |---|---|---|
 | `filePath` | `string` | Absolute path to the file |
-| `fileType` | `"java" \| "not_java"` | Whether the file is a Java source file |
+| `fileType` | `"java" \| "python" \| "javascript" \| "typescript" \| "unknown"` | The programming language of the source file |
 | `layer` | `cleanLayer` | Which clean architecture layer it belongs to |
 | `node` | `cleanNode` | The node type it represents |
 

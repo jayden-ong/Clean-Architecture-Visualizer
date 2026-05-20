@@ -21,7 +21,7 @@ export type SessionData = {
 
 export type FileStorage = {
     filePath: string,
-    fileType: "java" | "not_java",
+    fileType: "java" | "python" | "javascript" | "typescript" | "unknown",
     layer: cleanLayer,
     node: cleanNode
 };
