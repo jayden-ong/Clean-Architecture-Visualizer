@@ -6,7 +6,7 @@
     "build": "tsc --project clean-architecture-visualizer/tsconfig.json && node -e \"require('fs').copyFileSync('clean-architecture-visualizer/package.json', 'clean-architecture-visualizer/dist/package.json')\" && npm run build_frontend",
     "build_frontend": "npm install --prefix clean-architecture-visualizer/frontend && npm run build --prefix clean-architecture-visualizer/frontend",
     "start": "node ./clean-architecture-visualizer/dist/src/app/index.js",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+    "test":  "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "license": "MIT",
   "bugs": {
