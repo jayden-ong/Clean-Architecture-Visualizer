@@ -1,5 +1,6 @@
 Angelina Jiang,
 Anna Myllyniemi,
+Annie Wang,
 Ethan Diep,
 Eric Xu,
 Matthew Dahlgren,

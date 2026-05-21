@@ -90,6 +90,17 @@ Verifies your project's adherence to clean architecture — no need to open the 
 cave verify
 ```
 
+--- 
+
+### `cave end`
+
+Ends the project by closing the server and cleaning up the database.
+
+```bash
+cave end
+```
+
+---
 Cave will analyze your project and report any violations of clean architecture principles directly in your terminal.
 
 **Clean project output:**

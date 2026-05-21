@@ -17,6 +17,8 @@ import { InitProjectOutputData } from "../use_case/initProject/initProjectOutput
 import { CreateUseCaseInteractor } from "../use_case/createUseCase/createUseCaseInteractor.js";
 import { CreateUseCasePresenter } from "../interface_adapter/createUseCase/createUseCasePresenter.js";
 
+import { stopServer } from "../server/server.js";
+
 export class AppBuilder {
     private fileAccess?: FileAccess;
     private cleanArchAccess?: CleanArchAccess;
@@ -174,5 +176,10 @@ export class AppBuilder {
 
     runCreateUseCase(name: string) {
         this.createUseCaseController?.execute(name);
+    }
+
+    async runEndProject() {
+        this.db?.resetDB();
+        await stopServer();
     }
 }
