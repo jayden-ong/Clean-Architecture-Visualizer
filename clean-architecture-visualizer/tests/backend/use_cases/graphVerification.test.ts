@@ -1,5 +1,6 @@
 import { describe, it, expect, afterEach } from '@jest/globals';
 import { GraphVerificationInteractor } from "../../../src/use_case/graphVerification/graphVerificationInteractor.js";
+import { GraphVerificationPresenter } from "../../../src/interface_adapter/graphVerification/graphVerificationPresenter.js"
 import { FileAccess } from "../../../src/data_access/fileAccess.js";
 import { CleanArchAccess } from "../../../src/data_access/cleanArchInfoAccess.js";
 import { SessionDBAccess } from "../../../src/data_access/sessionDBAccess.js";
@@ -9,6 +10,7 @@ import { useCaseGraph } from "../../../src/entity/useCaseGraph.js";
 const genericFileAccess = new FileAccess();
 const genericNeighbourAccess = new CleanArchAccess();
 const genericDBAccess = new SessionDBAccess();
+const presenter = new GraphVerificationPresenter();
 
 function makeUseCaseGraphs(types: string[]): useCaseGraph[] {
     let useCaseGraphs: useCaseGraph[] = [];
@@ -47,7 +49,8 @@ describe("Ensures that resolveLayer correctly identifies layers from their file 
     const genericInteractor = new GraphVerificationInteractor(
         genericFileAccess,
         genericNeighbourAccess,
-        genericDBAccess
+        genericDBAccess,
+        presenter
     );
 
     const testCases: [string, string][] = [
@@ -86,7 +89,8 @@ describe("Ensures that resolveLayer correctly identifies layers from their file 
     const genericInteractor = new GraphVerificationInteractor(
         genericFileAccess,
         genericNeighbourAccess,
-        genericDBAccess
+        genericDBAccess,
+        presenter
     );
 
     const testCases: [string, string][] = [
@@ -145,6 +149,7 @@ describe("Ensures that verifyOutNeighbours correctly classifies the number of Cl
                 genericFileAccess,
                 genericNeighbourAccess,
                 genericDBAccess,
+                presenter,
                 (useCaseGraphList as useCaseGraph[])
             );
             await (interactor as any).verifyOutNeighbours();
@@ -172,6 +177,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                     genericFileAccess,
                     genericNeighbourAccess,
                     dbAccess,
+                    presenter,
                     useCaseGraphList
                 );
                 await (interactor as any).verifyOutNeighbours();
@@ -191,6 +197,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 makeUseCaseGraphs(["empty", "single"])
             );
             await (interactor as any).populateDatabase();
@@ -208,6 +215,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 makeUseCaseGraphs(["single"])
             );
             await (interactor as any).verifyOutNeighbours();
@@ -226,6 +234,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 makeUseCaseGraphs(["empty"])
             );
             await (interactor as any).verifyOutNeighbours();
@@ -241,6 +250,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 makeUseCaseGraphs(["single"])
             );
             await (interactor as any).verifyOutNeighbours();
@@ -259,6 +269,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 [uc]
             );
             await (interactor as any).verifyOutNeighbours();
@@ -279,6 +290,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 [uc1, uc2]
             );
             await (interactor as any).populateDatabase();
@@ -296,6 +308,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 makeUseCaseGraphs(["single"])
             );
             await (interactor as any).verifyOutNeighbours();
@@ -316,6 +329,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 [uc]
             );
             await (interactor as any).populateDatabase();
