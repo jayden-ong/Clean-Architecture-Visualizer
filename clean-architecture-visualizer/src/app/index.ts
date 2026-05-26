@@ -16,7 +16,6 @@ import { SessionDBAccess } from "../data_access/sessionDBAccess.js";
 import { GraphVerificationController } from '../interface_adapter/graphVerification/graphVerificationController.js';
 import { GraphVerificationInteractor } from '../use_case/graphVerification/graphVerificationInteractor.js';
 import { startCommand } from "../server/startCommand.js";
-import { CreateUseCaseinteractor } from "../use_case/createUseCase/createUseCaseInteractor.js";
 import { InitProjectInteractor } from "../use_case/initProject/initProjectInteractor.js";
 import { CreateUseCaseController } from "../interface_adapter/createUseCase/createUseCaseController.js";
 import { InitProjectContoller } from "../interface_adapter/intiProject/initProjectContoller.js";
