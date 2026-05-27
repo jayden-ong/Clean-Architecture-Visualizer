@@ -3,7 +3,6 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import chalk from "chalk";
 import type { Server } from "http";
 
-import learningMode from "./routes/learningMode.js"
 import analysis from "./routes/analysis.js"
 import codebase from "./routes/codebase.js"
 import template from "./routes/template.js"
@@ -18,7 +17,6 @@ export function startServer() {
   app.use(express.json());
 
   // Routes
-  app.use("/api", learningMode);
   app.use("/api", analysis);
   app.use("/api", codebase);
   app.use("/api", template);
