@@ -1,8 +1,10 @@
-import type { SessionDBAccessInterface } from '../../data_access/sessionDBAccessInterface.js';
-import type { NodeStorage, EdgeStorage } from '../../types/sessionData.js';
-import type { GetUseCaseInfoInputBoundary } from './getUseCaseInfoInputBoundary.js';
-import type { GetUseCaseInfoInputData } from './getUseCaseInfoInputData.js';
-import type { GetUseCaseInfoOutputData } from './getUseCaseInfoOutputData.js';
+ import type { SessionDBAccessInterface } from "../../data_access/sessionDBAccessInterface.js";
+import type { cleanLayer } from "../../types/cleanLayer.js";
+import type { cleanNode } from "../../types/cleanNode.js";
+import type { NodeStorage, EdgeStorage } from "../../types/sessionData.js";
+import type { GetUseCaseInfoInputBoundary } from "./getUseCaseInfoInputBoundary.js";
+import type { GetUseCaseInfoInputData } from "./getUseCaseInfoInputData.js";
+import type { GetUseCaseInfoOutputData } from "./getUseCaseInfoOutputData.js";
 
 export type UseCaseInfoResponse = {
   interaction_name: string;
@@ -12,12 +14,12 @@ export type UseCaseInfoResponse = {
 };
 
 type UseCaseNodeResponse = {
-  id: string;
-  name?: string;
-  type: string;
-  layer: string;
-  file_path?: string;
-  status: 'VALID' | 'MISSING' | 'VIOLATION';
+    id: string;
+    name?: string;
+    type: cleanNode;
+    layer: cleanLayer;
+    file_path?: string;
+    status: "VALID" | "MISSING" | "VIOLATION";
 };
 
 type UseCaseEdgeResponse = {
@@ -43,23 +45,24 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
     const nodes = this.buildNodes(useCase);
     const edges = this.buildEdges(useCase);
 
-    const result: UseCaseInfoResponse = {
-      interaction_name: useCase.name,
-      nodes: nodes,
-      edges: edges,
-      decoupling: false,
-    };
+        const result: UseCaseInfoResponse = {
+            interaction_name: useCase.name,
+            nodes: nodes,
+            edges: edges,
+            decoupling: false
+        };
 
-    const allNodes = this.db.getAllNodes();
-    /*Checking for sub use case.
-     *If an edge points to another node that is a use case interactor, then that edge represents a subuse case.
-     */
-    const hasSubCase = edges.some(
-      (edge) =>
-        edge.source !== edge.target &&
-        allNodes.find((node) => node.id === edge.target)?.type ===
-          'useCaseInteractor'
-    );
+        const allNodes = this.db.getAllNodes();
+
+        /**
+         * Checking for sub use case.
+         * If an edge points to another node that is a use case interactor, then that edge represents a subuse case.
+         */
+                        
+        const hasSubCase = edges.some(edge =>
+            edge.source !== edge.target &&
+            allNodes.find(node => node.id === edge.target)?.type === "useCaseInteractor"
+        );
 
     if (hasSubCase) {
       result.decoupling = true;
