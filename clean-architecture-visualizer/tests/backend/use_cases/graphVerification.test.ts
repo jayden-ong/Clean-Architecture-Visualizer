@@ -1,14 +1,18 @@
 import { describe, it, expect, afterEach } from '@jest/globals';
 import { GraphVerificationInteractor } from "../../../src/use_case/graphVerification/graphVerificationInteractor.js";
+import { GraphVerificationPresenter } from "../../../src/interface_adapter/graphVerification/graphVerificationPresenter.js"
 import { FileAccess } from "../../../src/data_access/fileAccess.js";
+import type { FileAccessInterface } from "../../../src/data_access/fileAccessInterface.js";
 import { CleanArchAccess } from "../../../src/data_access/cleanArchInfoAccess.js";
 import { SessionDBAccess } from "../../../src/data_access/sessionDBAccess.js";
 
 import { useCaseGraph } from "../../../src/entity/useCaseGraph.js";
+import type { cleanNode } from '../../../src/types/cleanNode.ts';
 
 const genericFileAccess = new FileAccess();
 const genericNeighbourAccess = new CleanArchAccess();
 const genericDBAccess = new SessionDBAccess();
+const presenter = new GraphVerificationPresenter();
 
 function makeUseCaseGraphs(types: string[]): useCaseGraph[] {
     let useCaseGraphs: useCaseGraph[] = [];
@@ -47,7 +51,8 @@ describe("Ensures that resolveLayer correctly identifies layers from their file 
     const genericInteractor = new GraphVerificationInteractor(
         genericFileAccess,
         genericNeighbourAccess,
-        genericDBAccess
+        genericDBAccess,
+        presenter
     );
 
     const testCases: [string, string][] = [
@@ -86,7 +91,8 @@ describe("Ensures that resolveLayer correctly identifies layers from their file 
     const genericInteractor = new GraphVerificationInteractor(
         genericFileAccess,
         genericNeighbourAccess,
-        genericDBAccess
+        genericDBAccess,
+        presenter
     );
 
     const testCases: [string, string][] = [
@@ -145,6 +151,7 @@ describe("Ensures that verifyOutNeighbours correctly classifies the number of Cl
                 genericFileAccess,
                 genericNeighbourAccess,
                 genericDBAccess,
+                presenter,
                 (useCaseGraphList as useCaseGraph[])
             );
             await (interactor as any).verifyOutNeighbours();
@@ -172,6 +179,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                     genericFileAccess,
                     genericNeighbourAccess,
                     dbAccess,
+                    presenter,
                     useCaseGraphList
                 );
                 await (interactor as any).verifyOutNeighbours();
@@ -191,6 +199,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 makeUseCaseGraphs(["empty", "single"])
             );
             await (interactor as any).populateDatabase();
@@ -208,6 +217,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 makeUseCaseGraphs(["single"])
             );
             await (interactor as any).verifyOutNeighbours();
@@ -226,6 +236,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 makeUseCaseGraphs(["empty"])
             );
             await (interactor as any).verifyOutNeighbours();
@@ -241,6 +252,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 makeUseCaseGraphs(["single"])
             );
             await (interactor as any).verifyOutNeighbours();
@@ -259,6 +271,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 [uc]
             );
             await (interactor as any).verifyOutNeighbours();
@@ -279,6 +292,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 [uc1, uc2]
             );
             await (interactor as any).populateDatabase();
@@ -296,6 +310,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 makeUseCaseGraphs(["single"])
             );
             await (interactor as any).verifyOutNeighbours();
@@ -316,6 +331,7 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
                 genericFileAccess,
                 genericNeighbourAccess,
                 dbAccess,
+                presenter,
                 [uc]
             );
             await (interactor as any).populateDatabase();
@@ -325,3 +341,137 @@ describe("Ensures that populateDatabase correctly populates the database", () =>
         });
     });
 });
+
+/* 
+ * Mock FileAccess class used to make files with fake imports rather than looking at real project files.
+*/
+class MockFileAccess implements FileAccessInterface {
+    // Used to set the return value of getFileImports for specfic file paths.
+    contents: Map<string, string[]>;
+    internalFilePaths: Map<string, string>;
+
+    constructor(map: Map<string, string[]>, internalFilePaths: Map<string, string>) {
+        this.contents = map;
+        this.internalFilePaths = internalFilePaths;
+    }
+    async getUseCases(): Promise<string[]> {
+        return [];
+    }
+    async getFilePaths(node: string, paths: Map<string, string>): Promise<void> {
+       if (node === "use_case"){
+            this.internalFilePaths.forEach((path, fileName) => {
+                paths.set(fileName, path);
+             });
+       }
+    }
+    async getFileImports(path: string): Promise<string[]> {
+        return this.contents.get(path) || [];
+    }
+    async getProjectName(): Promise<string> {
+        return "MockProject";
+    }
+    async getFileContent(path: string): Promise<string> {
+        return "";
+    }
+    async getFileSnippet(filePath: string, target?: string): Promise<string | undefined> {
+        return undefined;
+    }
+    async getLineNumber(filePath: string, target: string): Promise<number | undefined> {
+        return undefined;
+    }
+    async createDirectory(filePath: string): Promise<void> {
+        return;
+    }
+    async getCurrentPath(): Promise<string> {
+        return "/mock/path";
+    }
+    async bfsFindDir(curr: string, target: string): Promise<string | null> {
+        return null;
+    }
+    async exists(path: string): Promise<boolean> {
+        return false;
+    }
+    async createFile(filePath: string, content: string = ""): Promise<void> {
+        return;
+    }
+}
+
+describe("Imports across use cases are caught and seperate from normal violations", () => {
+    const fileMockContents = new Map<string, string[]>();
+    const fileMockPaths = new Map<string, string>();
+
+    const externalInOrder: useCaseGraph[] = [];
+    const firstUseCase = new useCaseGraph("first");
+    firstUseCase.addFile("firstInteractor", "/mock/path/firstInteractor.ts");
+    firstUseCase.addFile("firstOutputData", "/mock/path/firstOutputData.ts");
+    externalInOrder.push(firstUseCase);
+
+    const secondUseCase = new useCaseGraph("second");
+    secondUseCase.addFile("secondInteractor", "/mock/path/secondInteractor.ts");
+    secondUseCase.addFile("secondOutputData", "/mock/path/secondOutputData.ts");
+    externalInOrder.push(secondUseCase);
+
+    fileMockContents.set("/mock/path/firstInteractor.ts", ["/mock/path/firstOutputData.ts"]);
+    fileMockContents.set("/mock/path/secondInteractor.ts", ["/mock/path/secondOutputData.ts", "/mock/path/firstOutputData.ts"]);
+
+    //This implementation needs to use distinct use case names for the MockFileAccess contents to not overlap
+    //  One potential fix could be to re-make the contents in the it.each testing block
+    //  but this is an easier implementation, and will work for fewer test cases.
+    const externalOutOfOrder: useCaseGraph[] = [];
+    const thirdUseCase = new useCaseGraph("third");
+    thirdUseCase.addFile("thirdInteractor", "/mock/path/thirdInteractor.ts");
+    thirdUseCase.addFile("thirdOutputData", "/mock/path/thirdOutputData.ts");
+    externalOutOfOrder.push(thirdUseCase);
+
+    const fourthUseCase = new useCaseGraph("fourth");
+    fourthUseCase.addFile("fourthInteractor", "/mock/path/fourthInteractor.ts");
+    fourthUseCase.addFile("fourthOutputData", "/mock/path/fourthOutputData.ts");
+    externalOutOfOrder.push(fourthUseCase);
+
+    fileMockContents.set("/mock/path/thirdInteractor.ts", ["/mock/path/thirdOutputData.ts"]);
+    fileMockContents.set("/mock/path/fourthInteractor.ts", ["/mock/path/fourthOutputData.ts"]);
+    fileMockContents.set("/mock/path/fourthOutputData.ts", ["/mock/path/thirdInteractor.ts"]);
+
+    const normalViolation: useCaseGraph[] = [];
+    const normalUseCase = new useCaseGraph("normal");
+    normalUseCase.addFile("normalInteractor", "/mock/path/normalInteractor.ts");
+    normalUseCase.addFile("normalOutputData", "/mock/path/normalOutputData.ts");
+    normalViolation.push(normalUseCase);
+
+    fileMockContents.set("/mock/path/normalOutputData.ts", ["/mock/path/normalInteractor.ts"]);
+
+    const testCaseGraphs = [externalInOrder, externalOutOfOrder, normalViolation];
+    testCaseGraphs.forEach(graphList => {
+        graphList.forEach(uc => {
+            uc.getFiles().forEach((path, name) => {
+                fileMockPaths.set(name, path);
+            })
+        });
+    });
+
+    const testCases: [string, useCaseGraph[], Array<[[cleanNode, cleanNode]] | []>][] = [
+        [ "Cross use case imports are violations even if otherwise CA valid", externalInOrder, 
+            [ [], [["useCaseInteractor", "outputData"]] ] ],
+        [ "Cross use case imports are violations tracked when not CA valid", externalOutOfOrder, 
+            [ [], [["outputData", "useCaseInteractor"]] ] ],
+        [ "Imports within the same use case are not tracked as cross use case violations", normalViolation, [[]]],
+    ]
+    it.each(testCases)(
+        "%s", async (_, useCaseGraphList, expectedViolations) => {
+            const mockFileAccess = new MockFileAccess(fileMockContents, fileMockPaths);
+            const dbAccess = new SessionDBAccess();
+            const presenter = new GraphVerificationPresenter();
+            const interactor = new GraphVerificationInteractor(
+                mockFileAccess,
+                genericNeighbourAccess,
+                dbAccess,
+                presenter,
+                (useCaseGraphList as useCaseGraph[])
+            );
+            await (interactor as any).buildFilePaths();
+            await (interactor as any).developOutNeighbours();
+            const crossUseCaseEdges = interactor.getCrossUseCaseEdges();
+            expect(crossUseCaseEdges).toEqual(expectedViolations);
+        }
+    )
+})

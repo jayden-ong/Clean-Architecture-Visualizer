@@ -18,6 +18,7 @@ import { CreateUseCaseInteractor } from "../use_case/createUseCase/createUseCase
 import { CreateUseCasePresenter } from "../interface_adapter/createUseCase/createUseCasePresenter.js";
 
 import { stopServer } from "../server/server.js";
+import type { GraphVerificationOutputBoundary } from "../use_case/graphVerification/graphVerificationOutputBoundary.js";
 
 export class AppBuilder {
     private fileAccess?: FileAccess;
@@ -26,6 +27,7 @@ export class AppBuilder {
     private graphVerificationInteractor?: GraphVerificationInputBoundary;
     private graphVerificationController?: GraphVerificationController;
     private graphVerificationOutputData?: GraphVerificationOutputData;
+    private graphVerificationPresenter?: GraphVerificationOutputBoundary;
     private initProjectInteractor?: InitProjectInputBoundary;
     private initProjectController?: InitProjectContoller;
     private createUseCaseInteractor?: CreateUseCaseInputBoundary;
@@ -53,19 +55,22 @@ export class AppBuilder {
             fileAccess: FileAccess,
             cleanArchAccess: CleanArchAccess,
             db: SessionDBAccess,
+            presenter: GraphVerificationOutputBoundary,
             useCaseGraphList: useCaseGraph[],
             outputData: GraphVerificationOutputData
-        ) => GraphVerificationInputBoundary
+        ) => GraphVerificationInputBoundary,
         ): this {
         if (!this.fileAccess || !this.cleanArchAccess || !this.db) {
             throw new Error("FileAccess, CleanArchAccess, and SessionDBAccess must be set before building interactor");
         }
         this.graphVerificationOutputData = new GraphVerificationOutputData();
+        this.graphVerificationPresenter = new GraphVerificationPresenter();
 
         this.graphVerificationInteractor = new InteractorClass(
             this.fileAccess,
             this.cleanArchAccess,
             this.db,
+            this.graphVerificationPresenter,
             [],
             this.graphVerificationOutputData
             );
@@ -146,27 +151,13 @@ export class AppBuilder {
     }
 
     runGraphVerification() {
-        this.graphVerificationController?.execute();
+        const formatForCLI = false // run from app
+        this.graphVerificationController?.execute(formatForCLI);
     }
 
     async runCLIGraphVerification() {
-        if (!this.graphVerificationOutputData) {
-            throw new Error("GraphVerificationOutputData must be built before presenter");
-        }
-        this.graphVerificationInteractor?.toggleCommandLine();
-        const presenter = new GraphVerificationPresenter(this.graphVerificationOutputData);
-        await this.graphVerificationController?.execute();
-        this.graphVerificationInteractor?.toggleCommandLine(); // set back to not printing to CL
-        const data = presenter.getOutputData();
-        const lineContent = data[0];
-        const lineColour = data[1];
-        for (let line = 0; line < lineContent.length; line++) {
-            if (lineColour[line]) {
-                console.log(chalk.green(lineContent[line]));
-            } else {
-                console.log(chalk.red(lineContent[line]));
-            }
-        }
+        const formatForCLI = true // run in terminal
+        await this.graphVerificationController?.execute(formatForCLI);
     }
 
     runInitProject() {

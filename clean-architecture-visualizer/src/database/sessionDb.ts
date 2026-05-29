@@ -3,8 +3,8 @@ import os from "os";
 import path from "path";
 
 export const SESSION_FILE = path.join(
-  os.tmpdir(),
-  "clean-arch-cli-session.json"
+    os.tmpdir(),
+    `clean-arch-cli-session${process.env.JEST_WORKER_ID ? `-${process.env.JEST_WORKER_ID}` : ""}.json`
 );
 
 export class SessionDB<T extends object> {

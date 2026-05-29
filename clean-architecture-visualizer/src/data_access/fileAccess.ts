@@ -138,7 +138,7 @@ export class FileAccess implements FileAccessInterface {
             const fileContent: string = await fs.readFile(filePath, { encoding: "utf-8" });
             const fileLines = fileContent.split("\n");
             fileLines.forEach((line) => {
-                if (line.startsWith("import ")) {
+                if (line.startsWith("import")) {
                     line = line.trim();
                     const lastSpace = line.lastIndexOf(" ");
                     result.push(line.substring(lastSpace + 1));
