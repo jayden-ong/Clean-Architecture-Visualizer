@@ -70,6 +70,15 @@ const getNodeByType = (nodes: CANode[], type: CAComponentType): CANode => {
  * Specifically:
  * - `cleanNode` to `CAComponentType`
  * - `cleanLayer` to `CALayer`
+ * 
+ * Note: `data` is actually not an `InteractionDetail` object since `data.nodes[number].type` 
+ * is really of type `cleanNode` (backend type) rather than `CAComponentType` (frontend type).
+ * Likewise, `data.nodes[number].layer` is really of type `cleanLayer` rather than `CALayer`.
+ * 
+ * However `useInteractor`, the hook that makes the API call to retrieve `data` from the 
+ * backend, has return type declared (incorrectly) as `InteractionDetail`. Thus to avoid 
+ * type errors from TypeScript, the `data` parameter is typed as `InteractionDetail`.
+ * 
  * @param data response object received from the backend
  * @returns a new object with the converted types
  */
