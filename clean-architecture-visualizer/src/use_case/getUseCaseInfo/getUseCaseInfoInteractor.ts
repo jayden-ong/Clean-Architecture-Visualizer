@@ -37,10 +37,13 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
     private readonly outputData: GetUseCaseInfoOutputData
   ) {}
 
-  async execute(): Promise<void> {
-    const id = this.inputData.getInteractionId();
-    const useCase = this.db.getUseCaseById(id);
-    if (!useCase) return;
+    async execute(): Promise<void> {
+        const id = this.inputData.getInteractionId();
+        const useCase = this.db.getUseCaseById(id);
+
+        console.log(useCase);
+
+        if (!useCase) return;
 
     const nodes = this.buildNodes(useCase);
     const edges = this.buildEdges(useCase);
@@ -71,26 +74,37 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
     this.outputData.setOutputData(result);
   }
 
-  /**
-   * Build the node list for a use case.
-   * - VALID / VIOLATION nodes come from NodeStorage entries whose filePath
-   *   is referenced by the use case's fileKeys.
-   * - MISSING nodes come from the use case's missingNodes list.
-   */
-  private buildNodes(
-    useCase: ReturnType<SessionDBAccessInterface['getUseCaseById']> & {}
-  ): UseCaseNodeResponse[] {
-    const result: UseCaseNodeResponse[] = [];
-    const fileKeySet = new Set(useCase.fileKeys);
+    /**
+     * Build the node list for a use case.
+     * - VALID / VIOLATION nodes come from NodeStorage entries whose filePath
+     *   is referenced by the use case's fileKeys.
+     * - MISSING nodes come from the use case's missingNodes list.
+     */
+    private buildNodes(
+        useCase: ReturnType<SessionDBAccessInterface["getUseCaseById"]> & {}
+    ): UseCaseNodeResponse[] {
+        const result: UseCaseNodeResponse[] = [];
 
-    // Nodes backed by real files
-    const fileNodes = this.db
-      .getAllNodes()
-      .filter((n) => n.filePath && fileKeySet.has(n.filePath));
+        console.log("useCase.filekeys");
+        console.log(useCase.fileKeys);
 
-    for (const node of fileNodes) {
-      result.push(this.formatNode(node));
-    }
+        // useCase file keys that correspond to actual files in the DB
+        const fileNodes: NodeStorage[] = [];
+        
+        for (const fileKey of useCase.fileKeys) {
+            const nodeFromDB = this.db.getAllNodes().find(
+                n => n.filePath && n.filePath.includes(fileKey)
+            );
+
+            if (nodeFromDB !== undefined) fileNodes.push(nodeFromDB);
+        }
+
+        for (const node of fileNodes) {
+            result.push(this.formatNode(node));
+        }
+
+        console.log("result before missing nodes computed:");
+        console.log(result);
 
     // Missing nodes — one entry per missing cleanNode type
     for (const missingType of useCase.missingNodes) {
@@ -98,10 +112,13 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
         .getNodesByStatus('MISSING')
         .find((n) => n.type === missingType);
 
-      if (existing) {
-        result.push(this.formatNode(existing));
-      }
-    }
+            if (existing) {
+                result.push(this.formatNode(existing));
+            }
+        }
+
+        console.log("result after missing nodes computed:");
+        console.log(result);
 
     return result;
   }
@@ -129,16 +146,41 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
     return result;
   }
 
-  private formatNode(node: NodeStorage): UseCaseNodeResponse {
-    return {
-      id: node.id,
-      ...(node.name && { name: node.name }),
-      type: node.type,
-      layer: node.layer,
-      ...(node.filePath && { file_path: node.filePath }),
-      status: node.status,
-    };
-  }
+
+    private formatNodeName(node: NodeStorage): string {
+        // convert from camelCase to PascalCase and add spaces between words
+        // e.g. "dataAccessInterface" -> "Data Access Interface"
+        const nodeNamePascalCase = node.type.charAt(0).toUpperCase() + node.type.slice(1);
+        const words: string[] = [""];
+
+        for (let i = 0; i < nodeNamePascalCase.length; i ++) {
+            const char = nodeNamePascalCase[i];
+            if (char === char.toUpperCase()) {
+                words.push(char);
+            } else {
+                words[words.length - 1] += char;
+            }
+        }
+
+        const nodeName = words.join(" ");
+
+        if (node.status === "MISSING") {
+            return nodeName + " (MISSING)";
+        } else {
+            return nodeName;
+        }
+    }
+
+    private formatNode(node: NodeStorage): UseCaseNodeResponse {
+        return {
+            id: node.id,
+            name: node.name ?? this.formatNodeName(node),
+            type: node.type,
+            layer: node.layer,
+            ...(node.filePath && { file_path: node.filePath }),
+            status: node.status,
+        };
+    }
 
   private formatEdge(edge: EdgeStorage): UseCaseEdgeResponse {
     return {
