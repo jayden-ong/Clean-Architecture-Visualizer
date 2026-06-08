@@ -1,4 +1,4 @@
- import type { SessionDBAccessInterface } from "../../data_access/sessionDBAccessInterface.js";
+import type { SessionDBAccessInterface } from "../../data_access/sessionDBAccessInterface.js";
 import type { cleanLayer } from "../../types/cleanLayer.js";
 import type { cleanNode } from "../../types/cleanNode.js";
 import type { NodeStorage, EdgeStorage } from "../../types/sessionData.js";
@@ -40,8 +40,6 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
     async execute(): Promise<void> {
         const id = this.inputData.getInteractionId();
         const useCase = this.db.getUseCaseById(id);
-
-        console.log(useCase);
 
         if (!useCase) return;
 
@@ -85,14 +83,12 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
     ): UseCaseNodeResponse[] {
         const result: UseCaseNodeResponse[] = [];
 
-        console.log("useCase.filekeys");
-        console.log(useCase.fileKeys);
-
         // useCase file keys that correspond to actual files in the DB
         const fileNodes: NodeStorage[] = [];
+        const allNodes = this.db.getAllNodes();
         
         for (const fileKey of useCase.fileKeys) {
-            const nodeFromDB = this.db.getAllNodes().find(
+            const nodeFromDB = allNodes.find(
                 n => n.filePath && n.filePath.includes(fileKey)
             );
 
@@ -103,25 +99,19 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
             result.push(this.formatNode(node));
         }
 
-        console.log("result before missing nodes computed:");
-        console.log(result);
-
-    // Missing nodes — one entry per missing cleanNode type
-    for (const missingType of useCase.missingNodes) {
-      const existing = this.db
-        .getNodesByStatus('MISSING')
-        .find((n) => n.type === missingType);
+        // Missing nodes — one entry per missing cleanNode type
+        for (const missingType of useCase.missingNodes) {
+            const existing = this.db.getNodesByStatus("MISSING").find(
+                n => n.type === missingType
+            );
 
             if (existing) {
                 result.push(this.formatNode(existing));
             }
         }
 
-        console.log("result after missing nodes computed:");
-        console.log(result);
-
-    return result;
-  }
+        return result;
+    }
 
   /**
    * Build the edge list for a use case by collecting all source→target
@@ -151,7 +141,7 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
         // convert from camelCase to PascalCase and add spaces between words
         // e.g. "dataAccessInterface" -> "Data Access Interface"
         const nodeNamePascalCase = node.type.charAt(0).toUpperCase() + node.type.slice(1);
-        const words: string[] = [""];
+        const words: string[] = [];
 
         for (let i = 0; i < nodeNamePascalCase.length; i ++) {
             const char = nodeNamePascalCase[i];
@@ -165,7 +155,7 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
         const nodeName = words.join(" ");
 
         if (node.status === "MISSING") {
-            return nodeName + " (MISSING)";
+            return nodeName + " (Missing)";
         } else {
             return nodeName;
         }
@@ -173,7 +163,7 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
 
     private formatNode(node: NodeStorage): UseCaseNodeResponse {
         return {
-            id: node.id,
+            id: node.type,
             name: node.name ?? this.formatNodeName(node),
             type: node.type,
             layer: node.layer,

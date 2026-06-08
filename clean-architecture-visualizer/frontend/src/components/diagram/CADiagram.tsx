@@ -90,11 +90,6 @@ function formatInteractionData(data: InteractionDetail): InteractionDetail {
             type: cleanNodeToCAComponentType[node.type as cleanNode],
             layer: cleanLayerToCALayer[node.layer as cleanLayer],
         })),
-        edges: data.edges.map(edge => ({
-            ...edge,
-            source: cleanNodeToCAComponentType[edge.source as cleanNode],
-            target: cleanNodeToCAComponentType[edge.target as cleanNode],
-        })),
     };
 }
 
@@ -370,22 +365,23 @@ export function CADiagram({ onNodeClick }: { onNodeClick?: (info: NodeClickInfo)
       );
     }
 
-        const nodes = interactionData.nodes ?? [];
+        const nodes = interactionData.nodes;
 
-    controller = getNodeByType(nodes, 'Controller');
-    presenter = getNodeByType(nodes, 'Presenter');
-    viewModel = getNodeByType(nodes, 'ViewModel');
-    inputData = getNodeByType(nodes, 'InputData');
-    inputBoundary = getNodeByType(nodes, 'InputBoundary');
-    interactor = getNodeByType(nodes, 'Interactor');
-    outputBoundary = getNodeByType(nodes, 'OutputBoundary');
-    outputData = getNodeByType(nodes, 'OutputData');
-    dataAccessInterface = getNodeByType(nodes, 'DataAccessInterface');
-    entities = getNodeByType(nodes, 'Entity');
-    view = getNodeByType(nodes, 'View');
-    dataAccess = getNodeByType(nodes, 'DataAccess');
-    database = getNodeByType(nodes, 'Database');
-  }
+        controller = getNodeByType(nodes, 'Controller');
+        presenter = getNodeByType(nodes, 'Presenter');
+        viewModel = getNodeByType(nodes, 'ViewModel');
+        inputData = getNodeByType(nodes, 'InputData');
+        inputBoundary = getNodeByType(nodes, 'InputBoundary');
+        interactor = getNodeByType(nodes, 'Interactor');
+        outputBoundary = getNodeByType(nodes, 'OutputBoundary');
+        outputData = getNodeByType(nodes, 'OutputData');
+        dataAccessInterface = getNodeByType(nodes, 'DataAccessInterface');
+        entities = getNodeByType(nodes, 'Entity');
+        view = getNodeByType(nodes, 'View');
+        dataAccess = getNodeByType(nodes, 'DataAccess');
+        database = getNodeByType(nodes, 'Database');
+        edges = interactionData.edges;
+    } 
 
   return (
     <CADiagramView
