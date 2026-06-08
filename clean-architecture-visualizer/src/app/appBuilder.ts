@@ -4,34 +4,34 @@ import type { FileAccess } from '../data_access/fileAccess.js';
 import type { CleanArchAccess } from '../data_access/cleanArchInfoAccess.js';
 import type { SessionDBAccess } from '../data_access/sessionDBAccess.js';
 
-import { GraphVerificationController } from '../interface_adapter/graphVerification/graphVerificationController.js';
-import type { GraphVerificationInputBoundary } from '../use_case/graphVerification/graphVerificationInputBoundary.js';
-import { GraphVerificationOutputData } from '../use_case/graphVerification/graphVerificationOutputData.js';
-import { GraphVerificationPresenter } from '../interface_adapter/graphVerification/graphVerificationPresenter.js';
-import type { useCaseGraph } from '../entity/useCaseGraph.js';
-import type { InitProjectInputBoundary } from '../use_case/initProject/initProjectInputBoundary.js';
-import type { InitProjectContoller } from '../interface_adapter/intiProject/initProjectContoller.js';
-import type { CreateUseCaseInputBoundary } from '../use_case/createUseCase/createUseCaseInputBoundary.js';
-import type { CreateUseCaseController } from '../interface_adapter/createUseCase/createUseCaseController.js';
-import { InitProjectOutputData } from '../use_case/initProject/initProjectOutputData.js';
-import { CreateUseCaseInteractor } from '../use_case/createUseCase/createUseCaseInteractor.js';
-import { CreateUseCasePresenter } from '../interface_adapter/createUseCase/createUseCasePresenter.js';
+import { GraphVerificationController } from "../interface_adapter/graphVerification/graphVerificationController.js";
+import type { GraphVerificationInputBoundary } from "../use_case/graphVerification/graphVerificationInputBoundary.js";
+import { GraphVerificationOutputData } from "../use_case/graphVerification/graphVerificationOutputData.js";
+import { GraphVerificationPresenter } from "../interface_adapter/graphVerification/graphVerificationPresenter.js";
+import type { useCaseGraph } from "../entity/useCaseGraph.js";
+import type { InitProjectInputBoundary } from "../use_case/initProject/initProjectInputBoundary.js";
+import type { InitProjectController } from "../interface_adapter/initProject/initProjectController.js";
+import type { CreateUseCaseInputBoundary } from "../use_case/createUseCase/createUseCaseInputBoundary.js";
+import type { CreateUseCaseController } from "../interface_adapter/createUseCase/createUseCaseController.js";
+import { InitProjectOutputData } from "../use_case/initProject/initProjectOutputData.js";
+import { CreateUseCaseInteractor } from "../use_case/createUseCase/createUseCaseInteractor.js";
+import { CreateUseCasePresenter } from "../interface_adapter/createUseCase/createUseCasePresenter.js";
 
 import { stopServer } from '../server/server.js';
 import type { GraphVerificationOutputBoundary } from '../use_case/graphVerification/graphVerificationOutputBoundary.js';
 
 export class AppBuilder {
-  private fileAccess?: FileAccess;
-  private cleanArchAccess?: CleanArchAccess;
-  private db?: SessionDBAccess;
-  private graphVerificationInteractor?: GraphVerificationInputBoundary;
-  private graphVerificationController?: GraphVerificationController;
-  private graphVerificationOutputData?: GraphVerificationOutputData;
-  private graphVerificationPresenter?: GraphVerificationOutputBoundary;
-  private initProjectInteractor?: InitProjectInputBoundary;
-  private initProjectController?: InitProjectContoller;
-  private createUseCaseInteractor?: CreateUseCaseInputBoundary;
-  private createUseCaseController?: CreateUseCaseController;
+    private fileAccess?: FileAccess;
+    private cleanArchAccess?: CleanArchAccess;
+    private db?: SessionDBAccess;
+    private graphVerificationInteractor?: GraphVerificationInputBoundary;
+    private graphVerificationController?: GraphVerificationController;
+    private graphVerificationOutputData?: GraphVerificationOutputData;
+    private graphVerificationPresenter?: GraphVerificationOutputBoundary;
+    private initProjectInteractor?: InitProjectInputBoundary;
+    private initProjectController?: InitProjectController;
+    private createUseCaseInteractor?: CreateUseCaseInputBoundary;
+    private createUseCaseController?: CreateUseCaseController; 
 
   // Data Access Layer
   withFileAccess(fileAccess: FileAccess): this {
@@ -126,20 +126,18 @@ export class AppBuilder {
     return this;
   }
 
-  buildInitProjectController(
-    ControllerClass: new (
-      interactor: InitProjectInputBoundary
-    ) => InitProjectContoller
-  ): this {
-    if (!this.initProjectInteractor) {
-      throw new Error('InitProjectInteractor must be built before controller');
+    buildInitProjectController(
+        ControllerClass: new (interactor: InitProjectInputBoundary) => InitProjectController
+        ): this {
+        if (!this.initProjectInteractor) {
+            throw new Error("InitProjectInteractor must be built before controller");
+        }
+        
+        this.initProjectController = new ControllerClass(
+            this.initProjectInteractor
+            );
+        return this;
     }
-
-    this.initProjectController = new ControllerClass(
-      this.initProjectInteractor
-    );
-    return this;
-  }
 
   buildCreateUseCaseController(
     ControllerClass: new (

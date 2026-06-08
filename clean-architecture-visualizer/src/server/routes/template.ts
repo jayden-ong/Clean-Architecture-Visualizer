@@ -1,22 +1,22 @@
-import { Router } from 'express';
-import { FileAccess } from '../../data_access/fileAccess.js';
-import { InitProjectOutputData } from '../../use_case/initProject/initProjectOutputData.js';
-import { InitProjectInteractor } from '../../use_case/initProject/initProjectInteractor.js';
-import { InitProjectContoller } from '../../interface_adapter/intiProject/initProjectContoller.js';
-import { InitProjectPresetner } from '../../interface_adapter/intiProject/initProjectPresenter.js';
-import { CreateUseCaseInteractor } from '../../use_case/createUseCase/createUseCaseInteractor.js';
-import { CreateUseCaseController } from '../../interface_adapter/createUseCase/createUseCaseController.js';
-import { CreateUseCasePresenter } from '../../interface_adapter/createUseCase/createUseCasePresenter.js';
+import { Router } from "express";
+import { FileAccess } from "../../data_access/fileAccess.js";
+import { InitProjectOutputData } from "../../use_case/initProject/initProjectOutputData.js";
+import { InitProjectInteractor } from "../../use_case/initProject/initProjectInteractor.js";
+import { InitProjectController } from "../../interface_adapter/initProject/initProjectController.js";
+import { InitProjectPresenter } from "../../interface_adapter/initProject/initProjectPresenter.js";
+import { CreateUseCaseInteractor } from "../../use_case/createUseCase/createUseCaseInteractor.js";
+import { CreateUseCaseController } from "../../interface_adapter/createUseCase/createUseCaseController.js";
+import { CreateUseCasePresenter } from "../../interface_adapter/createUseCase/createUseCasePresenter.js";
 
 const router = Router();
 
 const fileAccess = new FileAccess();
 
-router.post('/template/generate', async (_req, res) => {
-  const outputData = new InitProjectOutputData();
-  const interactor = new InitProjectInteractor(fileAccess, outputData);
-  const controller = new InitProjectContoller(interactor);
-  const presenter = new InitProjectPresetner(outputData);
+router.post("/template/generate", async (_req, res) => {
+    const outputData = new InitProjectOutputData();
+    const interactor = new InitProjectInteractor(fileAccess, outputData);
+    const controller = new InitProjectController(interactor);
+    const presenter = new InitProjectPresenter(outputData);
 
   await controller.execute();
   const result = presenter.getOutputData();
