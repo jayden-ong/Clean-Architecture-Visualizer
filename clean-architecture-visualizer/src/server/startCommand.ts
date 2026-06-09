@@ -1,15 +1,15 @@
-import { exec, spawn } from "child_process";
-import * as fs from "fs";
-import * as path from "path";
-import { fileURLToPath } from "url";
+import { exec, spawn } from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
 
-import chalk from "chalk";
+import chalk from 'chalk';
 
-import { startServer } from "./server.js";
+import { startServer } from './server.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const frontendPathFromSource = path.resolve(__dirname, "../../frontend");
-const frontendPathFromDist = path.resolve(__dirname, "../../../frontend");
+const frontendPathFromSource = path.resolve(__dirname, '../../frontend');
+const frontendPathFromDist = path.resolve(__dirname, '../../../frontend');
 const FRONTEND_DIR = fs.existsSync(frontendPathFromSource)
   ? frontendPathFromSource
   : frontendPathFromDist;
@@ -19,22 +19,25 @@ const API_PORT = 3131;
 export async function startCommand(): Promise<void> {
   const backendServer = startServer();
 
-  const isWindows = process.platform === "win32";
-  const npmCmd = isWindows ? "npm.cmd" : "npm";
+  const isWindows = process.platform === 'win32';
+  const npmCmd = isWindows ? 'npm.cmd' : 'npm';
 
-  const devProcess = spawn(npmCmd, ["run", "dev:backend"], {
+  const devProcess = spawn(npmCmd, ['run', 'dev:backend'], {
     cwd: FRONTEND_DIR,
-    stdio: "inherit",
+    stdio: 'inherit',
     shell: isWindows,
     windowsHide: true,
   });
 
   let openTimer: NodeJS.Timeout;
 
-  devProcess.on("error", (err) => {
-    console.error(chalk.red("CRITICAL: Failed to start frontend:"), err.message);
+  devProcess.on('error', (err) => {
+    console.error(
+      chalk.red('CRITICAL: Failed to start frontend:'),
+      err.message
+    );
     if (openTimer) clearTimeout(openTimer);
-    shutdown("INTERNAL_ERROR");
+    shutdown('INTERNAL_ERROR');
   });
 
   const closeFrontend = () => {
@@ -48,7 +51,7 @@ export async function startCommand(): Promise<void> {
     if (shutdownStarted) return;
     shutdownStarted = true;
 
-    if (signal !== "INTERNAL_ERROR") {
+    if (signal !== 'INTERNAL_ERROR') {
       console.log(chalk.dim(`\nReceived ${signal}. Shutting down...`));
     }
 
@@ -60,28 +63,31 @@ export async function startCommand(): Promise<void> {
 
     backendServer.close(() => {
       clearTimeout(forceExitTimer);
-      process.exit(signal === "INTERNAL_ERROR" ? 1 : 0);
+      process.exit(signal === 'INTERNAL_ERROR' ? 1 : 0);
     });
   };
 
-  process.once("SIGINT", () => shutdown("SIGINT"));
-  process.once("SIGTERM", () => shutdown("SIGTERM"));
+  process.once('SIGINT', () => shutdown('SIGINT'));
+  process.once('SIGTERM', () => shutdown('SIGTERM'));
 
   const openCommand =
-    process.platform === "darwin"
-      ? "open"
-      : process.platform === "win32"
-        ? "cmd /c start \"\""
-        : "xdg-open";
+    process.platform === 'darwin'
+      ? 'open'
+      : process.platform === 'win32'
+        ? 'cmd /c start ""'
+        : 'xdg-open';
   const appUrl = `http://localhost:${API_PORT}`;
 
   openTimer = setTimeout(() => {
     if (!shutdownStarted) {
       exec(`${openCommand} "${appUrl}"`, (error) => {
         if (error) {
-          console.warn(chalk.yellow("Could not open browser. Visit manually:"), appUrl);
+          console.warn(
+            chalk.yellow('Could not open browser. Visit manually:'),
+            appUrl
+          );
         } else {
-          console.log(chalk.green("App opened at"), appUrl);
+          console.log(chalk.green('App opened at'), appUrl);
         }
       });
     }
