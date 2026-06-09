@@ -50,3 +50,21 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit
         working-directory: ./clean-architecture-visualizer/frontend
+
+  format-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-node-env
+
+      - uses: ./.github/actions/setup-node-env
+        with:
+          working-directory: ./clean-architecture-visualizer/frontend
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run format check
+        run: npm run format:check

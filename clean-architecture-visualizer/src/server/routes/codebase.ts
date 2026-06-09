@@ -58,11 +58,9 @@ router.get(
     const result = presenter.getOutputData();
 
     if (!result) {
-      res
-        .status(404)
-        .json({
-          error: `File '${filepath}' not found for interaction '${interactionId}'.`,
-        });
+      res.status(404).json({
+        error: `File '${filepath}' not found for interaction '${interactionId}'.`,
+      });
       return;
     }
 
@@ -90,11 +88,9 @@ router.get(
     const result = presenter.getOutputData();
 
     if (!result) {
-      res
-        .status(404)
-        .json({
-          error: `File '${filepath}' not found for interaction '${interactionId}'.`,
-        });
+      res.status(404).json({
+        error: `File '${filepath}' not found for interaction '${interactionId}'.`,
+      });
       return;
     }
 

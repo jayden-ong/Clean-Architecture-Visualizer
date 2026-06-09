@@ -44,11 +44,9 @@ router.post('/template/add/:useCaseName', async (req, res) => {
     return;
   }
 
-  res
-    .status(201)
-    .json({
-      message: `Use case '${req.params.useCaseName}' created successfully`,
-    });
+  res.status(201).json({
+    message: `Use case '${req.params.useCaseName}' created successfully`,
+  });
 });
 
 export default router;
