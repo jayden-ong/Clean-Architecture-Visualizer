@@ -6,7 +6,13 @@ import { Typography, Container, CircularProgress } from '@mui/material';
 import { useLocation, useParams } from 'react-router-dom';
 import { CADiagramView } from './CADiagramView';
 import { type NodeClickInfo } from './CANodeView';
-import type { CANode, CAEdge, CAComponentType, CALayer, InteractionDetail } from '../../lib/types';
+import type {
+  CANode,
+  CAEdge,
+  CAComponentType,
+  CALayer,
+  InteractionDetail,
+} from '../../lib/types';
 import { useInteraction } from '../../actions/useAnalysis';
 import type { cleanNode } from '../../../../src/types/cleanNode';
 import type { cleanLayer } from '../../../../src/types/cleanLayer';
@@ -27,28 +33,27 @@ const componentLayerMap: Record<CAComponentType, CALayer> = {
   Database: 'Frameworks',
 };
 
-
 const cleanNodeToCAComponentType: Record<cleanNode, CAComponentType> = {
-    'controller': 'Controller',
-    'presenter': 'Presenter',
-    'viewModel': 'ViewModel',
-    'view': 'View',
-    'dataAccess': 'DataAccess',
-    'dataAccessInterface': 'DataAccessInterface',
-    'database': 'Database',
-    'entities': 'Entity',
-    'inputData': 'InputData',
-    'inputBoundary': 'InputBoundary',
-    'outputData': 'OutputData',
-    'outputBoundary': 'OutputBoundary',
-    'useCaseInteractor': 'Interactor'
+  controller: 'Controller',
+  presenter: 'Presenter',
+  viewModel: 'ViewModel',
+  view: 'View',
+  dataAccess: 'DataAccess',
+  dataAccessInterface: 'DataAccessInterface',
+  database: 'Database',
+  entities: 'Entity',
+  inputData: 'InputData',
+  inputBoundary: 'InputBoundary',
+  outputData: 'OutputData',
+  outputBoundary: 'OutputBoundary',
+  useCaseInteractor: 'Interactor',
 };
 
 const cleanLayerToCALayer: Record<cleanLayer, CALayer> = {
-    'interfaceAdapters': 'InterfaceAdapters',
-    'frameworksAndDrivers': 'Frameworks',
-    'enterpriseBusinessRules': 'EnterpriseBusinessRules',
-    'applicationBusinessRules': 'ApplicationBusinessRules'
+  interfaceAdapters: 'InterfaceAdapters',
+  frameworksAndDrivers: 'Frameworks',
+  enterpriseBusinessRules: 'EnterpriseBusinessRules',
+  applicationBusinessRules: 'ApplicationBusinessRules',
 };
 
 const getNodeByType = (nodes: CANode[], type: CAComponentType): CANode => {
@@ -66,60 +71,66 @@ const getNodeByType = (nodes: CANode[], type: CAComponentType): CANode => {
 
 /**
  * Converts node and edge data from backend to frontend types
- * 
+ *
  * Specifically:
  * - `cleanNode` to `CAComponentType`
  * - `cleanLayer` to `CALayer`
- * 
- * Note: `data` is actually not an `InteractionDetail` object since `data.nodes[number].type` 
+ *
+ * Note: `data` is actually not an `InteractionDetail` object since `data.nodes[number].type`
  * is really of type `cleanNode` (backend type) rather than `CAComponentType` (frontend type).
  * Likewise, `data.nodes[number].layer` is really of type `cleanLayer` rather than `CALayer`.
- * 
- * However `useInteractor`, the hook that makes the API call to retrieve `data` from the 
- * backend, has return type declared (incorrectly) as `InteractionDetail`. Thus to avoid 
+ *
+ * However `useInteractor`, the hook that makes the API call to retrieve `data` from the
+ * backend, has return type declared (incorrectly) as `InteractionDetail`. Thus to avoid
  * type errors from TypeScript, the `data` parameter is typed as `InteractionDetail`.
- * 
+ *
  * @param data response object received from the backend
  * @returns a new object with the converted types
  */
 function formatInteractionData(data: InteractionDetail): InteractionDetail {
-    return {
-        ...data,
-        nodes: data.nodes.map(node => ({
-            ...node,
-            type: cleanNodeToCAComponentType[node.type as cleanNode],
-            layer: cleanLayerToCALayer[node.layer as cleanLayer],
-        })),
-    };
+  return {
+    ...data,
+    nodes: data.nodes.map((node) => ({
+      ...node,
+      type: cleanNodeToCAComponentType[node.type as cleanNode],
+      layer: cleanLayerToCALayer[node.layer as cleanLayer],
+    })),
+  };
 }
 
-export function CADiagram({ onNodeClick }: { onNodeClick?: (info: NodeClickInfo) => void }) {
-    let controller: CANode;
-    let presenter: CANode;
-    let viewModel: CANode;
-    let inputData: CANode;
-    let inputBoundary: CANode;
-    let interactor: CANode;
-    let outputBoundary: CANode;
-    let outputData: CANode;
-    let dataAccessInterface: CANode;
-    let entities: CANode;
-    let view: CANode;
-    let dataAccess: CANode;
-    let database: CANode;
+export function CADiagram({
+  onNodeClick,
+}: {
+  onNodeClick?: (info: NodeClickInfo) => void;
+}) {
+  let controller: CANode;
+  let presenter: CANode;
+  let viewModel: CANode;
+  let inputData: CANode;
+  let inputBoundary: CANode;
+  let interactor: CANode;
+  let outputBoundary: CANode;
+  let outputData: CANode;
+  let dataAccessInterface: CANode;
+  let entities: CANode;
+  let view: CANode;
+  let dataAccess: CANode;
+  let database: CANode;
 
   let edges: CAEdge[] = [];
 
-    const { interactionId } = useParams<{ interactionId: string }>();
-    const { pathname } = useLocation();
-    const {
-        data: rawInteractionData,
-        isLoading,
-        isError,
-        error,
-    } = useInteraction(interactionId ?? '');
+  const { interactionId } = useParams<{ interactionId: string }>();
+  const { pathname } = useLocation();
+  const {
+    data: rawInteractionData,
+    isLoading,
+    isError,
+    error,
+  } = useInteraction(interactionId ?? '');
 
-    const interactionData = rawInteractionData ? formatInteractionData(rawInteractionData) : undefined;
+  const interactionData = rawInteractionData
+    ? formatInteractionData(rawInteractionData)
+    : undefined;
 
   const isLearningMode =
     interactionId === undefined && pathname.endsWith('/learning');
@@ -365,23 +376,23 @@ export function CADiagram({ onNodeClick }: { onNodeClick?: (info: NodeClickInfo)
       );
     }
 
-        const nodes = interactionData.nodes;
+    const nodes = interactionData.nodes;
 
-        controller = getNodeByType(nodes, 'Controller');
-        presenter = getNodeByType(nodes, 'Presenter');
-        viewModel = getNodeByType(nodes, 'ViewModel');
-        inputData = getNodeByType(nodes, 'InputData');
-        inputBoundary = getNodeByType(nodes, 'InputBoundary');
-        interactor = getNodeByType(nodes, 'Interactor');
-        outputBoundary = getNodeByType(nodes, 'OutputBoundary');
-        outputData = getNodeByType(nodes, 'OutputData');
-        dataAccessInterface = getNodeByType(nodes, 'DataAccessInterface');
-        entities = getNodeByType(nodes, 'Entity');
-        view = getNodeByType(nodes, 'View');
-        dataAccess = getNodeByType(nodes, 'DataAccess');
-        database = getNodeByType(nodes, 'Database');
-        edges = interactionData.edges;
-    } 
+    controller = getNodeByType(nodes, 'Controller');
+    presenter = getNodeByType(nodes, 'Presenter');
+    viewModel = getNodeByType(nodes, 'ViewModel');
+    inputData = getNodeByType(nodes, 'InputData');
+    inputBoundary = getNodeByType(nodes, 'InputBoundary');
+    interactor = getNodeByType(nodes, 'Interactor');
+    outputBoundary = getNodeByType(nodes, 'OutputBoundary');
+    outputData = getNodeByType(nodes, 'OutputData');
+    dataAccessInterface = getNodeByType(nodes, 'DataAccessInterface');
+    entities = getNodeByType(nodes, 'Entity');
+    view = getNodeByType(nodes, 'View');
+    dataAccess = getNodeByType(nodes, 'DataAccess');
+    database = getNodeByType(nodes, 'Database');
+    edges = interactionData.edges;
+  }
 
   return (
     <CADiagramView
