@@ -17,7 +17,10 @@ describe('Template Hooks', () => {
 
     server.use(
       http.post('*/api/template/generate', () => {
-        return HttpResponse.json({ message: 'Project initiated successfully' }, { status: 201 });
+        return HttpResponse.json(
+          { message: 'Project initiated successfully' },
+          { status: 201 }
+        );
       })
     );
 
@@ -37,7 +40,10 @@ describe('Template Hooks', () => {
 
     server.use(
       http.post('*/api/template/add/Add%20User', () => {
-        return HttpResponse.json({ message: "Use case 'Add User' created successfully" }, { status: 201 });
+        return HttpResponse.json(
+          { message: "Use case 'Add User' created successfully" },
+          { status: 201 }
+        );
       })
     );
 
@@ -46,10 +52,14 @@ describe('Template Hooks', () => {
     result.current.mutate('Add User');
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data?.message).toBe("Use case 'Add User' created successfully");
+    expect(result.current.data?.message).toBe(
+      "Use case 'Add User' created successfully"
+    );
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['file-tree'] });
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['relations'] });
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['analysis_summary'] });
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: ['analysis_summary'],
+    });
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['violations'] });
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['interactions'] });
   });

@@ -8,7 +8,9 @@ describe('Template API', () => {
     const mockData = { message: 'Project initiated successfully' };
 
     server.use(
-      http.post('*/api/template/generate', () => HttpResponse.json(mockData, { status: 201 }))
+      http.post('*/api/template/generate', () =>
+        HttpResponse.json(mockData, { status: 201 })
+      )
     );
 
     const result = await generateProject();
@@ -19,10 +21,14 @@ describe('Template API', () => {
   it('createUseCase encodes the use case name in the request URL', async () => {
     const useCaseName = 'Add User';
     const encodedName = encodeURIComponent(useCaseName);
-    const mockData = { message: `Use case '${useCaseName}' created successfully` };
+    const mockData = {
+      message: `Use case '${useCaseName}' created successfully`,
+    };
 
     server.use(
-      http.post(`*/api/template/add/${encodedName}`, () => HttpResponse.json(mockData, { status: 201 }))
+      http.post(`*/api/template/add/${encodedName}`, () =>
+        HttpResponse.json(mockData, { status: 201 })
+      )
     );
 
     const result = await createUseCase(useCaseName);
