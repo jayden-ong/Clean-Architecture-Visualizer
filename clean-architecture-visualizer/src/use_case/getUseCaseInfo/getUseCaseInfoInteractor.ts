@@ -1,4 +1,6 @@
 import type { SessionDBAccessInterface } from '../../data_access/sessionDBAccessInterface.js';
+import type { cleanLayer } from '../../types/cleanLayer.js';
+import type { cleanNode } from '../../types/cleanNode.js';
 import type { NodeStorage, EdgeStorage } from '../../types/sessionData.js';
 import type { GetUseCaseInfoInputBoundary } from './getUseCaseInfoInputBoundary.js';
 import type { GetUseCaseInfoInputData } from './getUseCaseInfoInputData.js';
@@ -14,8 +16,8 @@ export type UseCaseInfoResponse = {
 type UseCaseNodeResponse = {
   id: string;
   name?: string;
-  type: string;
-  layer: string;
+  type: cleanNode;
+  layer: cleanLayer;
   file_path?: string;
   status: 'VALID' | 'MISSING' | 'VIOLATION';
 };
@@ -38,6 +40,7 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
   async execute(): Promise<void> {
     const id = this.inputData.getInteractionId();
     const useCase = this.db.getUseCaseById(id);
+
     if (!useCase) return;
 
     const nodes = this.buildNodes(useCase);
@@ -51,9 +54,12 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
     };
 
     const allNodes = this.db.getAllNodes();
-    /*Checking for sub use case.
-     *If an edge points to another node that is a use case interactor, then that edge represents a subuse case.
+
+    /**
+     * Checking for sub use case.
+     * If an edge points to another node that is a use case interactor, then that edge represents a subuse case.
      */
+
     const hasSubCase = edges.some(
       (edge) =>
         edge.source !== edge.target &&
@@ -78,12 +84,18 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
     useCase: ReturnType<SessionDBAccessInterface['getUseCaseById']> & {}
   ): UseCaseNodeResponse[] {
     const result: UseCaseNodeResponse[] = [];
-    const fileKeySet = new Set(useCase.fileKeys);
 
-    // Nodes backed by real files
-    const fileNodes = this.db
-      .getAllNodes()
-      .filter((n) => n.filePath && fileKeySet.has(n.filePath));
+    // useCase file keys that correspond to actual files in the DB
+    const fileNodes: NodeStorage[] = [];
+    const allNodes = this.db.getAllNodes();
+
+    for (const fileKey of useCase.fileKeys) {
+      const nodeFromDB = allNodes.find(
+        (n) => n.filePath && n.filePath.includes(fileKey)
+      );
+
+      if (nodeFromDB !== undefined) fileNodes.push(nodeFromDB);
+    }
 
     for (const node of fileNodes) {
       result.push(this.formatNode(node));
@@ -126,10 +138,35 @@ export class GetUseCaseInfoInteractor implements GetUseCaseInfoInputBoundary {
     return result;
   }
 
+  private formatNodeName(node: NodeStorage): string {
+    // convert from camelCase to PascalCase and add spaces between words
+    // e.g. "dataAccessInterface" -> "Data Access Interface"
+    const nodeNamePascalCase =
+      node.type.charAt(0).toUpperCase() + node.type.slice(1);
+    const words: string[] = [];
+
+    for (let i = 0; i < nodeNamePascalCase.length; i++) {
+      const char = nodeNamePascalCase[i];
+      if (char === char.toUpperCase()) {
+        words.push(char);
+      } else {
+        words[words.length - 1] += char;
+      }
+    }
+
+    const nodeName = words.join(' ');
+
+    if (node.status === 'MISSING') {
+      return nodeName + ' (Missing)';
+    } else {
+      return nodeName;
+    }
+  }
+
   private formatNode(node: NodeStorage): UseCaseNodeResponse {
     return {
-      id: node.id,
-      ...(node.name && { name: node.name }),
+      id: node.type,
+      name: node.name ?? this.formatNodeName(node),
       type: node.type,
       layer: node.layer,
       ...(node.filePath && { file_path: node.filePath }),

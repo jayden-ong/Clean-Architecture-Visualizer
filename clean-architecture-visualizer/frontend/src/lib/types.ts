@@ -91,6 +91,7 @@ export interface InteractionDetail {
   interaction_name: string;
   nodes: CANode[];
   edges: CAEdge[];
+  decoupling: boolean;
 }
 
 // --- Violation Types ---

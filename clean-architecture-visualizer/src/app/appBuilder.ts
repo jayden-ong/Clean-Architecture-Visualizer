@@ -10,7 +10,7 @@ import { GraphVerificationOutputData } from '../use_case/graphVerification/graph
 import { GraphVerificationPresenter } from '../interface_adapter/graphVerification/graphVerificationPresenter.js';
 import type { useCaseGraph } from '../entity/useCaseGraph.js';
 import type { InitProjectInputBoundary } from '../use_case/initProject/initProjectInputBoundary.js';
-import type { InitProjectContoller } from '../interface_adapter/intiProject/initProjectContoller.js';
+import type { InitProjectController } from '../interface_adapter/initProject/initProjectController.js';
 import type { CreateUseCaseInputBoundary } from '../use_case/createUseCase/createUseCaseInputBoundary.js';
 import type { CreateUseCaseController } from '../interface_adapter/createUseCase/createUseCaseController.js';
 import { InitProjectOutputData } from '../use_case/initProject/initProjectOutputData.js';
@@ -29,7 +29,7 @@ export class AppBuilder {
   private graphVerificationOutputData?: GraphVerificationOutputData;
   private graphVerificationPresenter?: GraphVerificationOutputBoundary;
   private initProjectInteractor?: InitProjectInputBoundary;
-  private initProjectController?: InitProjectContoller;
+  private initProjectController?: InitProjectController;
   private createUseCaseInteractor?: CreateUseCaseInputBoundary;
   private createUseCaseController?: CreateUseCaseController;
 
@@ -129,7 +129,7 @@ export class AppBuilder {
   buildInitProjectController(
     ControllerClass: new (
       interactor: InitProjectInputBoundary
-    ) => InitProjectContoller
+    ) => InitProjectController
   ): this {
     if (!this.initProjectInteractor) {
       throw new Error('InitProjectInteractor must be built before controller');

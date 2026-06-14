@@ -6,8 +6,16 @@ import { Typography, Container, CircularProgress } from '@mui/material';
 import { useLocation, useParams } from 'react-router-dom';
 import { CADiagramView } from './CADiagramView';
 import { type NodeClickInfo } from './CANodeView';
-import type { CANode, CAEdge, CAComponentType, CALayer } from '../../lib/types';
+import type {
+  CANode,
+  CAEdge,
+  CAComponentType,
+  CALayer,
+  InteractionDetail,
+} from '../../lib/types';
 import { useInteraction } from '../../actions/useAnalysis';
+import type { cleanNode } from '../../../../src/types/cleanNode';
+import type { cleanLayer } from '../../../../src/types/cleanLayer';
 
 const componentLayerMap: Record<CAComponentType, CALayer> = {
   Controller: 'InterfaceAdapters',
@@ -25,6 +33,29 @@ const componentLayerMap: Record<CAComponentType, CALayer> = {
   Database: 'Frameworks',
 };
 
+const cleanNodeToCAComponentType: Record<cleanNode, CAComponentType> = {
+  controller: 'Controller',
+  presenter: 'Presenter',
+  viewModel: 'ViewModel',
+  view: 'View',
+  dataAccess: 'DataAccess',
+  dataAccessInterface: 'DataAccessInterface',
+  database: 'Database',
+  entities: 'Entity',
+  inputData: 'InputData',
+  inputBoundary: 'InputBoundary',
+  outputData: 'OutputData',
+  outputBoundary: 'OutputBoundary',
+  useCaseInteractor: 'Interactor',
+};
+
+const cleanLayerToCALayer: Record<cleanLayer, CALayer> = {
+  interfaceAdapters: 'InterfaceAdapters',
+  frameworksAndDrivers: 'Frameworks',
+  enterpriseBusinessRules: 'EnterpriseBusinessRules',
+  applicationBusinessRules: 'ApplicationBusinessRules',
+};
+
 const getNodeByType = (nodes: CANode[], type: CAComponentType): CANode => {
   const node = nodes.find((candidate) => candidate.type === type);
   return (
@@ -37,6 +68,35 @@ const getNodeByType = (nodes: CANode[], type: CAComponentType): CANode => {
     }
   );
 };
+
+/**
+ * Converts node and edge data from backend to frontend types
+ *
+ * Specifically:
+ * - `cleanNode` to `CAComponentType`
+ * - `cleanLayer` to `CALayer`
+ *
+ * Note: `data` is actually not an `InteractionDetail` object since `data.nodes[number].type`
+ * is really of type `cleanNode` (backend type) rather than `CAComponentType` (frontend type).
+ * Likewise, `data.nodes[number].layer` is really of type `cleanLayer` rather than `CALayer`.
+ *
+ * However `useInteractor`, the hook that makes the API call to retrieve `data` from the
+ * backend, has return type declared (incorrectly) as `InteractionDetail`. Thus to avoid
+ * type errors from TypeScript, the `data` parameter is typed as `InteractionDetail`.
+ *
+ * @param data response object received from the backend
+ * @returns a new object with the converted types
+ */
+function formatInteractionData(data: InteractionDetail): InteractionDetail {
+  return {
+    ...data,
+    nodes: data.nodes.map((node) => ({
+      ...node,
+      type: cleanNodeToCAComponentType[node.type as cleanNode],
+      layer: cleanLayerToCALayer[node.layer as cleanLayer],
+    })),
+  };
+}
 
 export function CADiagram({
   onNodeClick,
@@ -62,11 +122,15 @@ export function CADiagram({
   const { interactionId } = useParams<{ interactionId: string }>();
   const { pathname } = useLocation();
   const {
-    data: interactionData,
+    data: rawInteractionData,
     isLoading,
     isError,
     error,
   } = useInteraction(interactionId ?? '');
+
+  const interactionData = rawInteractionData
+    ? formatInteractionData(rawInteractionData)
+    : undefined;
 
   const isLearningMode =
     interactionId === undefined && pathname.endsWith('/learning');
@@ -312,8 +376,7 @@ export function CADiagram({
       );
     }
 
-    const nodes = interactionData.nodes ?? [];
-    edges = interactionData.edges ?? [];
+    const nodes = interactionData.nodes;
 
     controller = getNodeByType(nodes, 'Controller');
     presenter = getNodeByType(nodes, 'Presenter');
@@ -328,6 +391,7 @@ export function CADiagram({
     view = getNodeByType(nodes, 'View');
     dataAccess = getNodeByType(nodes, 'DataAccess');
     database = getNodeByType(nodes, 'Database');
+    edges = interactionData.edges;
   }
 
   return (

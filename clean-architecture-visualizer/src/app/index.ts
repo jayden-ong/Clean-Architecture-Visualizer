@@ -18,7 +18,7 @@ import { GraphVerificationInteractor } from '../use_case/graphVerification/graph
 import { startCommand } from '../server/startCommand.js';
 import { InitProjectInteractor } from '../use_case/initProject/initProjectInteractor.js';
 import { CreateUseCaseController } from '../interface_adapter/createUseCase/createUseCaseController.js';
-import { InitProjectContoller } from '../interface_adapter/intiProject/initProjectContoller.js';
+import { InitProjectController } from '../interface_adapter/initProject/initProjectController.js';
 
 const program = new Command();
 
@@ -31,7 +31,7 @@ const app = new AppBuilder()
   .buildInitProjectInteractor(InitProjectInteractor)
   .buildGraphVerificationController(GraphVerificationController)
   .buildCreateUseCaseController(CreateUseCaseController)
-  .buildInitProjectController(InitProjectContoller);
+  .buildInitProjectController(InitProjectController);
 
 program.version(packageJson.version);
 
