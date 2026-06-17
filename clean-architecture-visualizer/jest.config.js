@@ -16,4 +16,5 @@ export default {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   testPathIgnorePatterns: ['/node_modules/', '<rootDir>/frontend/'],
+  modulePathIgnorePatterns: ['<rootDir>/dist'],
 };
