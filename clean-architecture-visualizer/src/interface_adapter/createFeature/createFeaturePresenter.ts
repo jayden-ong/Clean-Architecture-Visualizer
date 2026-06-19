@@ -7,7 +7,7 @@ export class CreateFeaturePresenter implements CreateFeatureOutputBoundary {
     showSuccessView(createFeatureOutputData: CreateFeatureOutputData): void {
         console.log(
             chalk.green(
-                `Usecase ${createFeatureOutputData.getFeature()} has been created.`
+                `Feature ${createFeatureOutputData.getFeature()} has been created.`
             )
         );
     }
