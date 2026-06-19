@@ -11,6 +11,9 @@ import { InitModuleProjectPresenter } from '../../interface_adapter/initModulePr
 import { CreateUseCaseInteractor } from '../../use_case/createUseCase/createUseCaseInteractor.js';
 import { CreateUseCaseController } from '../../interface_adapter/createUseCase/createUseCaseController.js';
 import { CreateUseCasePresenter } from '../../interface_adapter/createUseCase/createUseCasePresenter.js';
+import { CreateFeatureInteractor } from '../../use_case/createFeature/createFeatureInteractor.js';
+import { CreateFeatureController } from '../../interface_adapter/createFeature/createFeatureController.js';
+import { CreateFeaturePresenter } from '../../interface_adapter/createFeature/createFeaturePresenter.js';
 
 const router = Router();
 
@@ -67,6 +70,26 @@ router.post('/template/add/:useCaseName', async (req, res) => {
 
   res.status(201).json({
     message: `Use case '${req.params.useCaseName}' created successfully`,
+  });
+});
+
+router.post('/template/add/:featureName', async (req, res) => {
+  const presenter = new CreateFeaturePresenter();
+  const interactor = new CreateFeatureInteractor(fileAccess, presenter);
+  const controller = new CreateFeatureController(interactor);
+
+  await controller.execute(req.params.featureName);
+  const result = presenter.getError();
+
+  if (!result) {
+    res
+      .status(404)
+      .json({ error: `Could not make feature '${req.params.featureName}'` });
+    return;
+  }
+
+  res.status(201).json({
+    message: `Feature '${req.params.featureName}' created successfully`,
   });
 });
 

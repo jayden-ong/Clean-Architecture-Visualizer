@@ -15,10 +15,14 @@ import type { InitModuleProjectInputBoundary } from '../use_case/initModuleProje
 import type { InitModuleProjectController } from '../interface_adapter/initModuleProject/initModuleProjectController.js';
 import type { CreateUseCaseInputBoundary } from '../use_case/createUseCase/createUseCaseInputBoundary.js';
 import type { CreateUseCaseController } from '../interface_adapter/createUseCase/createUseCaseController.js';
+import type { CreateFeatureInputBoundary } from '../use_case/createFeature/createFeatureInputBoundary.js';
+import type { CreateFeatureController } from '../interface_adapter/createFeature/createFeatureController.js';
 import { InitProjectOutputData } from '../use_case/initProject/initProjectOutputData.js';
 import { InitModuleProjectOutputData } from '../use_case/initModuleProject/initModuleProjectOutputData.js';
 import { CreateUseCaseInteractor } from '../use_case/createUseCase/createUseCaseInteractor.js';
 import { CreateUseCasePresenter } from '../interface_adapter/createUseCase/createUseCasePresenter.js';
+import { CreateFeatureInteractor } from '../use_case/createFeature/createFeatureInteractor.js';
+import { CreateFeaturePresenter } from '../interface_adapter/createFeature/createFeaturePresenter.js';
 
 import { stopServer } from '../server/server.js';
 import type { GraphVerificationOutputBoundary } from '../use_case/graphVerification/graphVerificationOutputBoundary.js';
@@ -37,6 +41,8 @@ export class AppBuilder {
   private initModuleProjectController?: InitModuleProjectController;
   private createUseCaseInteractor?: CreateUseCaseInputBoundary;
   private createUseCaseController?: CreateUseCaseController;
+  private createFeatureInteractor?: CreateFeatureInputBoundary;
+  private createFeatureController?: CreateFeatureController;
 
   // Data Access Layer
   withFileAccess(fileAccess: FileAccess): this {
@@ -94,6 +100,20 @@ export class AppBuilder {
     this.createUseCaseInteractor = new CreateUseCaseInteractor(
       this.fileAccess,
       createUseCasePresenter
+    );
+    return this;
+  }
+
+  buildCreateFeatureInteractor(): this {
+    if (!this.fileAccess) {
+      throw new Error(
+        'FileAccess must be set before building CreateFeatureInteractor'
+      );
+    }
+    const createFeaturePresenter = new CreateFeaturePresenter();
+    this.createFeatureInteractor = new CreateFeatureInteractor(
+      this.fileAccess,
+      createFeaturePresenter
     );
     return this;
   }
@@ -192,6 +212,22 @@ export class AppBuilder {
     return this;
   }
 
+  buildCreateFeatureController(
+    ControllerClass: new (
+      interactor: CreateFeatureInputBoundary
+    ) => CreateFeatureController
+  ): this {
+    if (!this.createFeatureInteractor) {
+      throw new Error(
+        'CreateFeatureInteractor must be built before controller'
+      );
+    }
+    this.createFeatureController = new ControllerClass(
+      this.createFeatureInteractor
+    );
+    return this;
+  }
+
   build() {
     return {
       fileAccess: this.fileAccess!,
@@ -201,6 +237,8 @@ export class AppBuilder {
       initModuleProjectInteractor: this.initModuleProjectInteractor!,
       createUseCaseInteractor: this.createUseCaseInteractor!,
       createUseCaseController: this.createUseCaseController!,
+      createFeatureInteractor: this.createFeatureInteractor!,
+      createFeatureController: this.createFeatureController!,
       graphVerificationController: this.graphVerificationController!,
       initProjectController: this.initProjectController!,
       initModuleProjectController: this.initModuleProjectController!,
@@ -229,6 +267,10 @@ export class AppBuilder {
 
   runCreateUseCase(name: string) {
     this.createUseCaseController?.execute(name);
+  }
+
+  runCreateFeature(feature: string) {
+    this.createFeatureController?.execute(feature);
   }
 
   async runEndProject() {

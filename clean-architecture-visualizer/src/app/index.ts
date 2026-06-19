@@ -21,6 +21,7 @@ import { InitModuleProjectInteractor } from '../use_case/initModuleProject/initM
 import { CreateUseCaseController } from '../interface_adapter/createUseCase/createUseCaseController.js';
 import { InitProjectController } from '../interface_adapter/initProject/initProjectController.js';
 import { InitModuleProjectController } from '../interface_adapter/initModuleProject/initModuleProjectController.js';
+import { CreateFeatureController } from '../interface_adapter/createFeature/createFeatureController.js';
 
 const program = new Command();
 
@@ -30,10 +31,12 @@ const app = new AppBuilder()
   .withSessionDBAccess(new SessionDBAccess())
   .buildGraphVerificationInteractor(GraphVerificationInteractor)
   .buildCreateUseCaseInteractor()
+  .buildCreateFeatureInteractor()
   .buildInitProjectInteractor(InitProjectInteractor)
   .buildInitModuleProjectInteractor(InitModuleProjectInteractor)
   .buildGraphVerificationController(GraphVerificationController)
   .buildCreateUseCaseController(CreateUseCaseController)
+  .buildCreateFeatureController(CreateFeatureController)
   .buildInitProjectController(InitProjectController)
   .buildInitModuleProjectController(InitModuleProjectController);
 
@@ -77,6 +80,13 @@ program
   .action(async (name: string) => {
     app.runCreateUseCase(name);
   });
+  
+program
+  .command('feature <feature>')
+  .description('Add a new feature to the directory of features.')
+  .action(async (feature: string) => {
+    app.runCreateFeature(feature);
+  })
 
 program
   .command('end')
