@@ -4,6 +4,6 @@ export class InitModuleProjectController {
     constructor(private readonly inputBoundary : InitModuleProjectInputBoundary) {}
 
     async execute(){
-        this.inputBoundary.execute();
+        await this.inputBoundary.execute();
     }
 }
