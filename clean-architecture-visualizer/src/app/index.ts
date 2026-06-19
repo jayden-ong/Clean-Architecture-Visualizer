@@ -17,8 +17,10 @@ import { GraphVerificationController } from '../interface_adapter/graphVerificat
 import { GraphVerificationInteractor } from '../use_case/graphVerification/graphVerificationInteractor.js';
 import { startCommand } from '../server/startCommand.js';
 import { InitProjectInteractor } from '../use_case/initProject/initProjectInteractor.js';
+import { InitModuleProjectInteractor } from '../use_case/initModuleProject/initModuleProjectInteractor.js';
 import { CreateUseCaseController } from '../interface_adapter/createUseCase/createUseCaseController.js';
 import { InitProjectController } from '../interface_adapter/initProject/initProjectController.js';
+import { InitModuleProjectController } from '../interface_adapter/initModuleProject/initModuleProjectController.js';
 
 const program = new Command();
 
@@ -29,9 +31,11 @@ const app = new AppBuilder()
   .buildGraphVerificationInteractor(GraphVerificationInteractor)
   .buildCreateUseCaseInteractor()
   .buildInitProjectInteractor(InitProjectInteractor)
+  .buildInitModuleProjectInteractor(InitModuleProjectInteractor)
   .buildGraphVerificationController(GraphVerificationController)
   .buildCreateUseCaseController(CreateUseCaseController)
-  .buildInitProjectController(InitProjectController);
+  .buildInitProjectController(InitProjectController)
+  .buildInitModuleProjectController(InitModuleProjectController);
 
 program.version(packageJson.version);
 
@@ -58,6 +62,13 @@ program
   .description('Create the template for a new CSC207 project')
   .action(async () => {
     app.runInitProject();
+  });
+
+program
+  .command('module_init')
+  .description('Create the template for a new CSC207 project, packaged by module.')
+  .action(async () => {
+    app.runInitModuleProject();
   });
 
 program

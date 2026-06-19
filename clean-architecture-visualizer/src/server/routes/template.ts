@@ -4,6 +4,10 @@ import { InitProjectOutputData } from '../../use_case/initProject/initProjectOut
 import { InitProjectInteractor } from '../../use_case/initProject/initProjectInteractor.js';
 import { InitProjectController } from '../../interface_adapter/initProject/initProjectController.js';
 import { InitProjectPresenter } from '../../interface_adapter/initProject/initProjectPresenter.js';
+import { InitModuleProjectOutputData } from '../../use_case/initModuleProject/initModuleProjectOutputData.js';
+import { InitModuleProjectInteractor } from '../../use_case/initModuleProject/initModuleProjectInteractor.js';
+import { InitModuleProjectController } from '../../interface_adapter/initModuleProject/initModuleProjectController.js';
+import { InitModuleProjectPresenter } from '../../interface_adapter/initModuleProject/initModuleProjectPresenter.js';
 import { CreateUseCaseInteractor } from '../../use_case/createUseCase/createUseCaseInteractor.js';
 import { CreateUseCaseController } from '../../interface_adapter/createUseCase/createUseCaseController.js';
 import { CreateUseCasePresenter } from '../../interface_adapter/createUseCase/createUseCasePresenter.js';
@@ -17,6 +21,23 @@ router.post('/template/generate', async (_req, res) => {
   const interactor = new InitProjectInteractor(fileAccess, outputData);
   const controller = new InitProjectController(interactor);
   const presenter = new InitProjectPresenter(outputData);
+
+  await controller.execute();
+  const result = presenter.getOutputData();
+
+  if (!result) {
+    res.status(404).json({ error: `Failure to initiate project` });
+    return;
+  }
+
+  res.status(201).json({ message: `Project initiated successfully` });
+});
+
+router.post('/template/module_generate', async (_req, res) => {
+  const outputData = new InitModuleProjectOutputData();
+  const interactor = new InitModuleProjectInteractor(fileAccess, outputData);
+  const controller = new InitModuleProjectController(interactor);
+  const presenter = new InitModuleProjectPresenter(outputData);
 
   await controller.execute();
   const result = presenter.getOutputData();

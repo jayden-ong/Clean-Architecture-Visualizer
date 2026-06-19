@@ -11,9 +11,12 @@ import { GraphVerificationPresenter } from '../interface_adapter/graphVerificati
 import type { useCaseGraph } from '../entity/useCaseGraph.js';
 import type { InitProjectInputBoundary } from '../use_case/initProject/initProjectInputBoundary.js';
 import type { InitProjectController } from '../interface_adapter/initProject/initProjectController.js';
+import type { InitModuleProjectInputBoundary } from '../use_case/initModuleProject/initModuleProjectInputBoundary.js';
+import type { InitModuleProjectController } from '../interface_adapter/initModuleProject/initModuleProjectController.js';
 import type { CreateUseCaseInputBoundary } from '../use_case/createUseCase/createUseCaseInputBoundary.js';
 import type { CreateUseCaseController } from '../interface_adapter/createUseCase/createUseCaseController.js';
 import { InitProjectOutputData } from '../use_case/initProject/initProjectOutputData.js';
+import { InitModuleProjectOutputData } from '../use_case/initModuleProject/initModuleProjectOutputData.js';
 import { CreateUseCaseInteractor } from '../use_case/createUseCase/createUseCaseInteractor.js';
 import { CreateUseCasePresenter } from '../interface_adapter/createUseCase/createUseCasePresenter.js';
 
@@ -30,6 +33,8 @@ export class AppBuilder {
   private graphVerificationPresenter?: GraphVerificationOutputBoundary;
   private initProjectInteractor?: InitProjectInputBoundary;
   private initProjectController?: InitProjectController;
+  private initModuleProjectInteractor?: InitModuleProjectInputBoundary;
+  private initModuleProjectController?: InitModuleProjectController;
   private createUseCaseInteractor?: CreateUseCaseInputBoundary;
   private createUseCaseController?: CreateUseCaseController;
 
@@ -108,6 +113,21 @@ export class AppBuilder {
     return this;
   }
 
+  buildInitModuleProjectInteractor(
+    InteractorClass: new (
+      fileAccess: FileAccess,
+      outputData?: InitModuleProjectOutputData
+    ) => InitModuleProjectInputBoundary
+  ): this {
+    if (!this.fileAccess) {
+      throw new Error(
+        'FileAccess must be set before building InitModuleProjectInteractor'
+      );
+    }
+    this.initModuleProjectInteractor = new InteractorClass(this.fileAccess);
+    return this;
+  }
+
   // Controller Layer
   buildGraphVerificationController(
     ControllerClass: new (
@@ -141,6 +161,21 @@ export class AppBuilder {
     return this;
   }
 
+  buildInitModuleProjectController(
+    ControllerClass: new (
+      interactor: InitModuleProjectInputBoundary
+    ) => InitModuleProjectController
+  ): this {
+    if (!this.initModuleProjectInteractor) {
+      throw new Error('InitModuleProjectInteractor must be built before controller');
+    }
+
+    this.initModuleProjectController = new ControllerClass(
+      this.initModuleProjectInteractor
+    );
+    return this;
+  }
+
   buildCreateUseCaseController(
     ControllerClass: new (
       interactor: CreateUseCaseInputBoundary
@@ -163,10 +198,12 @@ export class AppBuilder {
       validOutNeighbourAccess: this.cleanArchAccess!,
       graphVerificationInteractor: this.graphVerificationInteractor!,
       initProjectInteractor: this.initProjectInteractor!,
+      initModuleProjectInteractor: this.initModuleProjectInteractor!,
       createUseCaseInteractor: this.createUseCaseInteractor!,
       createUseCaseController: this.createUseCaseController!,
       graphVerificationController: this.graphVerificationController!,
       initProjectController: this.initProjectController!,
+      initModuleProjectController: this.initModuleProjectController!,
     };
   }
 
@@ -183,6 +220,11 @@ export class AppBuilder {
   runInitProject() {
     this.initProjectController?.execute();
     console.log(chalk.green('Your project has been initialized.'));
+  }
+
+  runInitModuleProject() {
+    this.initModuleProjectController?.execute();
+    console.log(chalk.green('Your project packaged by module has been initialized.'));
   }
 
   runCreateUseCase(name: string) {
