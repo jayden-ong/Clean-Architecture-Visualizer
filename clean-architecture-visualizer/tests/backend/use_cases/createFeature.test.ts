@@ -77,4 +77,15 @@ describe('CreateFeatureInteractor', () => {
     expect(mockPresenter.showSuccessView).not.toHaveBeenCalled();
     expect(mockPresenter.showFailView).toHaveBeenCalled();
   });
+
+  it('Fails if unexpected error occurs during directory creation.', async () => {
+    mockFileAccess.getCurrentPath.mockResolvedValue('/root/src');
+    mockFileAccess.bfsFindDir.mockResolvedValue('/root/src/features');
+    mockFileAccess.exists.mockResolvedValue(true);
+    mockFileAccess.createDirectory.mockRejectedValue(new Error('Failed to create directory.'));
+    const inputData = new CreateFeatureInputData('new_feature');
+    await interactor.execute(inputData);
+    expect(mockPresenter.showSuccessView).not.toHaveBeenCalled();
+    expect(mockPresenter.showFailView).toHaveBeenCalled();
+  });
 });

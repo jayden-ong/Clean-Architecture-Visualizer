@@ -14,6 +14,9 @@ import { CreateUseCasePresenter } from '../../interface_adapter/createUseCase/cr
 import { CreateFeatureInteractor } from '../../use_case/createFeature/createFeatureInteractor.js';
 import { CreateFeatureController } from '../../interface_adapter/createFeature/createFeatureController.js';
 import { CreateFeaturePresenter } from '../../interface_adapter/createFeature/createFeaturePresenter.js';
+import { CreateModuleUseCaseInteractor } from '../../use_case/createModuleUseCase/createModuleUseCaseInteractor.js';
+import { CreateModuleUseCaseController } from '../../interface_adapter/CreateModuleUseCase/createModuleUseCaseController.js';
+import { CreateModuleUseCasePresenter } from '../../interface_adapter/CreateModuleUseCase/createModuleUseCasePresenter.js';
 
 const router = Router();
 
@@ -73,7 +76,7 @@ router.post('/template/add/:useCaseName', async (req, res) => {
   });
 });
 
-router.post('/template/add/:featureName', async (req, res) => {
+router.post('/template/module_add/:featureName', async (req, res) => {
   const presenter = new CreateFeaturePresenter();
   const interactor = new CreateFeatureInteractor(fileAccess, presenter);
   const controller = new CreateFeatureController(interactor);
@@ -90,6 +93,26 @@ router.post('/template/add/:featureName', async (req, res) => {
 
   res.status(201).json({
     message: `Feature '${req.params.featureName}' created successfully`,
+  });
+});
+
+router.post('/template/module_add/:featureName/:useCaseName', async (req, res) => {
+  const presenter = new CreateModuleUseCasePresenter();
+  const interactor = new CreateModuleUseCaseInteractor(fileAccess, presenter);
+  const controller = new CreateModuleUseCaseController(interactor);
+
+  await controller.execute(req.params.featureName, req.params.useCaseName);
+  const result = presenter.getError();
+
+  if (!result) {
+    res
+      .status(404)
+      .json({ error: `Could not make use case '${req.params.useCaseName}' in feature '${req.params.featureName}` });
+    return;
+  }
+
+  res.status(201).json({
+    message: `Use case '${req.params.useCaseName}' created successfully in feature '${req.params.featureName}'`,
   });
 });
 

@@ -22,6 +22,7 @@ import { CreateUseCaseController } from '../interface_adapter/createUseCase/crea
 import { InitProjectController } from '../interface_adapter/initProject/initProjectController.js';
 import { InitModuleProjectController } from '../interface_adapter/initModuleProject/initModuleProjectController.js';
 import { CreateFeatureController } from '../interface_adapter/createFeature/createFeatureController.js';
+import { CreateModuleUseCaseController } from '../interface_adapter/CreateModuleUseCase/createModuleUseCaseController.js';
 
 const program = new Command();
 
@@ -32,13 +33,16 @@ const app = new AppBuilder()
   .buildGraphVerificationInteractor(GraphVerificationInteractor)
   .buildCreateUseCaseInteractor()
   .buildCreateFeatureInteractor()
+  .buildCreateModuleUseCaseInteractor()
   .buildInitProjectInteractor(InitProjectInteractor)
   .buildInitModuleProjectInteractor(InitModuleProjectInteractor)
   .buildGraphVerificationController(GraphVerificationController)
   .buildCreateUseCaseController(CreateUseCaseController)
   .buildCreateFeatureController(CreateFeatureController)
   .buildInitProjectController(InitProjectController)
-  .buildInitModuleProjectController(InitModuleProjectController);
+  .buildInitModuleProjectController(InitModuleProjectController)
+  .buildCreateModuleUseCaseController(CreateModuleUseCaseController);
+
 
 program.version(packageJson.version);
 
@@ -80,6 +84,13 @@ program
   .action(async (name: string) => {
     app.runCreateUseCase(name);
   });
+
+program
+  .command('module_usecase <feature> <usecase>')
+  .description('Add a new use case to a specified feature.')
+  .action(async (feature : string, usecase : string) => {
+    app.runCreateModuleUseCase(feature, usecase);
+  }); 
   
 program
   .command('feature <feature>')

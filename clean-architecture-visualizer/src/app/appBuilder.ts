@@ -17,12 +17,16 @@ import type { CreateUseCaseInputBoundary } from '../use_case/createUseCase/creat
 import type { CreateUseCaseController } from '../interface_adapter/createUseCase/createUseCaseController.js';
 import type { CreateFeatureInputBoundary } from '../use_case/createFeature/createFeatureInputBoundary.js';
 import type { CreateFeatureController } from '../interface_adapter/createFeature/createFeatureController.js';
+import type { CreateModuleUseCaseInputBoundary } from '../use_case/createModuleUseCase/createModuleUseCaseInputBoundary.js';
+import type { CreateModuleUseCaseController } from '../interface_adapter/CreateModuleUseCase/createModuleUseCaseController.js';
 import { InitProjectOutputData } from '../use_case/initProject/initProjectOutputData.js';
 import { InitModuleProjectOutputData } from '../use_case/initModuleProject/initModuleProjectOutputData.js';
 import { CreateUseCaseInteractor } from '../use_case/createUseCase/createUseCaseInteractor.js';
 import { CreateUseCasePresenter } from '../interface_adapter/createUseCase/createUseCasePresenter.js';
 import { CreateFeatureInteractor } from '../use_case/createFeature/createFeatureInteractor.js';
 import { CreateFeaturePresenter } from '../interface_adapter/createFeature/createFeaturePresenter.js';
+import { CreateModuleUseCaseInteractor } from '../use_case/createModuleUseCase/createModuleUseCaseInteractor.js';
+import { CreateModuleUseCasePresenter } from '../interface_adapter/CreateModuleUseCase/createModuleUseCasePresenter.js';
 
 import { stopServer } from '../server/server.js';
 import type { GraphVerificationOutputBoundary } from '../use_case/graphVerification/graphVerificationOutputBoundary.js';
@@ -43,6 +47,8 @@ export class AppBuilder {
   private createUseCaseController?: CreateUseCaseController;
   private createFeatureInteractor?: CreateFeatureInputBoundary;
   private createFeatureController?: CreateFeatureController;
+  private createModuleUseCaseInteractor?: CreateModuleUseCaseInputBoundary;
+  private createModuleUseCaseController?: CreateModuleUseCaseController;
 
   // Data Access Layer
   withFileAccess(fileAccess: FileAccess): this {
@@ -114,6 +120,20 @@ export class AppBuilder {
     this.createFeatureInteractor = new CreateFeatureInteractor(
       this.fileAccess,
       createFeaturePresenter
+    );
+    return this;
+  }
+
+  buildCreateModuleUseCaseInteractor(): this {
+    if (!this.fileAccess) {
+      throw new Error(
+        'FileAccess must be set before building CreateModuleUseCaseInteractor'
+      );
+    }
+    const createModuleUseCasePresenter = new CreateModuleUseCasePresenter();
+    this.createModuleUseCaseInteractor = new CreateModuleUseCaseInteractor(
+      this.fileAccess,
+      createModuleUseCasePresenter
     );
     return this;
   }
@@ -212,6 +232,22 @@ export class AppBuilder {
     return this;
   }
 
+  buildCreateModuleUseCaseController(
+    ControllerClass: new (
+      interactor: CreateModuleUseCaseInputBoundary
+    ) => CreateModuleUseCaseController
+  ): this {
+    if (!this.createModuleUseCaseInteractor) {
+      throw new Error(
+        'CreateModuleUseCaseInteractor must be built before controller.'
+      );
+    }
+    this.createModuleUseCaseController = new ControllerClass(
+      this.createModuleUseCaseInteractor
+    );
+    return this;
+  }
+
   buildCreateFeatureController(
     ControllerClass: new (
       interactor: CreateFeatureInputBoundary
@@ -237,6 +273,8 @@ export class AppBuilder {
       initModuleProjectInteractor: this.initModuleProjectInteractor!,
       createUseCaseInteractor: this.createUseCaseInteractor!,
       createUseCaseController: this.createUseCaseController!,
+      createModuleUseCaseInteractor: this.createModuleUseCaseInteractor!,
+      createModuleUseCaseController: this.createModuleUseCaseController,
       createFeatureInteractor: this.createFeatureInteractor!,
       createFeatureController: this.createFeatureController!,
       graphVerificationController: this.graphVerificationController!,
@@ -271,6 +309,10 @@ export class AppBuilder {
 
   runCreateFeature(feature: string) {
     this.createFeatureController?.execute(feature);
+  }
+
+  runCreateModuleUseCase(feature: string, name: string) {
+    this.createModuleUseCaseController?.execute(feature, name);
   }
 
   async runEndProject() {
