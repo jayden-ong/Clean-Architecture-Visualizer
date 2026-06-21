@@ -1,11 +1,11 @@
 import {
-  describe,
-  it,
-  expect,
-  jest,
-  beforeEach,
-  beforeAll,
   afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
 } from '@jest/globals';
 
 const serverModulePath = '../../../src/server/server.js';
@@ -88,7 +88,7 @@ describe('Server lifecycle', () => {
     const { AppBuilder } = await import(appBuilderModulePath);
     const { SessionDBAccess } = await import(sessionDBAccessPath);
 
-    const server = startServer();
+    const server = await startServer(true);
     const appBuilder = new AppBuilder();
     (appBuilder as any).db = new SessionDBAccess();
 

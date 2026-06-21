@@ -38,9 +38,10 @@ program.version(packageJson.version);
 program
   .command('start')
   .description('Start backend server and frontend dev server')
-  .action(async () => {
+  .option('--backend-only', 'Start only the backend server', false)
+  .action(async (options) => {
     app.runGraphVerification();
-    await startCommand();
+    await startCommand({ backendOnly: options.backendOnly });
   });
 
 program
