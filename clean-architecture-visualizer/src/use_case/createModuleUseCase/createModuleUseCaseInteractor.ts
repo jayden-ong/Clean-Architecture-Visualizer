@@ -31,17 +31,17 @@ export class CreateModuleUseCaseInteractor implements CreateModuleUseCaseInputBo
                 return;
             }
 
-            // check if usecase already exists in feature
-            const useCasePath = path.join(currFeatureDirectory as string, usecase);
-            if (await this.fileAccess.exists(useCasePath)) {
+            // check if usecase already exists.
+            if (await this.fileAccess.bfsFindDir(featuresDirectory, usecase)) {
                 this.presenter.showFailView("The input usecase already exists.");
                 return;
             }
-
+            
+            const useCasePath = path.join(currFeatureDirectory as string, usecase);
             // Create all directories
             await this.fileAccess.createDirectory(useCasePath);
 
-            const iaPath = path.join(useCasePath, 'interface_adapters');
+            const iaPath = path.join(useCasePath, 'interface_adapter');
             await this.fileAccess.createDirectory(iaPath);
             const ucPath = path.join(useCasePath, 'use_case');
             await this.fileAccess.createDirectory(ucPath);

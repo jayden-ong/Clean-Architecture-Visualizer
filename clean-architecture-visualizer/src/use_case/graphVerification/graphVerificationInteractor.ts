@@ -55,6 +55,8 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
     await this.developOutNeighbours();
     await this.verifyOutNeighbours();
     await this.populateDatabase();
+
+    // Paths are defined as <File Name, File Path>
     if (formatForCLI) {
       this.prepareOutput();
       this.presenter.prepareSuccessView(this.outputData);
@@ -66,7 +68,17 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
    * values being their respective file paths.
    */
   private async buildFilePaths(): Promise<void> {
-    await Promise.all([
+    // Must now account for packaging by module -- if features exists, packaging by module
+    const currPath = process.cwd();
+    if(await this.fileAccess.bfsFindDir(currPath, 'features')) {
+      await Promise.all([
+      this.fileAccess.getFilePaths('features', this.internalFilePaths),
+      ...this.externalDirectories.map((dir) =>
+        this.fileAccess.getFilePaths(dir, this.externalFilePaths)
+      ),
+    ]);
+    } else {
+      await Promise.all([
       ...this.internalDirectories.map((dir) =>
         this.fileAccess.getFilePaths(dir, this.internalFilePaths)
       ),
@@ -74,6 +86,7 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
         this.fileAccess.getFilePaths(dir, this.externalFilePaths)
       ),
     ]);
+    }
   }
 
   /**
@@ -142,7 +155,6 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
       if (!fromNode) continue;
       this.externalNodes[fileName] = fromNode;
       const imports = await this.fileAccess.getFileImports(filePath);
-
       // Find all graphs that own any (.some functionality) of this file's imports
       const owningGraphs = this.useCaseGraphList.filter((graph) =>
         imports.some((importPath) =>

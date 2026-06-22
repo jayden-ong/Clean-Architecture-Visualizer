@@ -38,7 +38,7 @@ describe('InitModuleProjectInteractor', () => {
         `${ROOT_PATH}/src/main/java/data_access`,
         `${ROOT_PATH}/src/main/java/entity`,
         `${ROOT_PATH}/src/main/java/app`,
-        `${ROOT_PATH}/src/main/java/view`,
+        `${ROOT_PATH}/src/main/java/views`,
         ];
 
         expectedDirs.forEach((dir) => {
@@ -64,7 +64,7 @@ describe('InitModuleProjectInteractor', () => {
         `${ROOT_PATH}/src/main/java/data_access`,
         `${ROOT_PATH}/src/main/java/entity`,
         `${ROOT_PATH}/src/main/java/app`,
-        `${ROOT_PATH}/src/main/java/view`,
+        `${ROOT_PATH}/src/main/java/views`,
         ];
         
         expect(mockFileAccess.createDirectory).toHaveBeenCalledWith(`${ROOT_PATH}/src`);

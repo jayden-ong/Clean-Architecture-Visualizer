@@ -32,7 +32,7 @@ export class InitModuleProjectInteractor implements InitModuleProjectInputBounda
             await this.fileAccess.createDirectory(testPath);
             
             // Create code structure for packaging by module.
-            const subDirectories = ['features', 'data_access', 'entity', 'app', 'view'];
+            const subDirectories = ['features', 'data_access', 'entity', 'app', 'views'];
             for (const directoryName of subDirectories) {
                 await this.fileAccess.createDirectory(path.join(javaPath, directoryName));
             }
