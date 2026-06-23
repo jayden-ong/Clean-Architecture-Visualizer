@@ -64,7 +64,7 @@ router.post('/template/add/:useCaseName', async (req, res) => {
   await controller.execute(req.params.useCaseName);
   const result = presenter.getError();
 
-  if (!result) {
+  if (result) {
     res
       .status(404)
       .json({ error: `Could not make use case '${req.params.useCaseName}'` });
@@ -84,7 +84,7 @@ router.post('/template/module_add/:featureName', async (req, res) => {
   await controller.execute(req.params.featureName);
   const result = presenter.getError();
 
-  if (!result) {
+  if (result) {
     res
       .status(404)
       .json({ error: `Could not make feature '${req.params.featureName}'` });
@@ -104,10 +104,10 @@ router.post('/template/module_add/:featureName/:useCaseName', async (req, res) =
   await controller.execute(req.params.featureName, req.params.useCaseName);
   const result = presenter.getError();
 
-  if (!result) {
+  if (result) {
     res
       .status(404)
-      .json({ error: `Could not make use case '${req.params.useCaseName}' in feature '${req.params.featureName}` });
+      .json({ error: `Could not make use case '${req.params.useCaseName}' in feature '${req.params.featureName}'` });
     return;
   }
 
