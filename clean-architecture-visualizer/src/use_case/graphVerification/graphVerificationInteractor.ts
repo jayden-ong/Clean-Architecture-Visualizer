@@ -126,6 +126,7 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
         const fromNode = this.resolveNode(filePath);
         if (!fromNode) continue;
         this.externalNodes[fileName] = fromNode;
+        // Stores the names of the files imported (does not store the actual path)
         const imports = await this.fileAccess.getFileImports(filePath);
         for (const importPath of imports) {
           const toNode =
@@ -143,6 +144,10 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
               this.crossUseCaseEdges[useCaseIndex].push([fromNode, toNode]);
             } else {
               graph.setNodeNeighbour(fromNode, toNode);
+              const modifiedImportPath = importPath.length > 0 && importPath.at(-1) === ";" ? importPath.slice(0, -1) : importPath;
+              if(this.externalFilePaths.has(modifiedImportPath)){
+                graph.addFile(modifiedImportPath, this.externalFilePaths.get(modifiedImportPath) as string);
+              }
             }
           }
         }
@@ -214,7 +219,8 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
     if (importPath.includes('viewmodel')) return 'interfaceAdapters'; // must be verified before 'view'
     if (importPath.includes('view')) return 'frameworksAndDrivers';
     if (importPath.includes('database')) return 'frameworksAndDrivers';
-    if (importPath.includes('entities')) return 'enterpriseBusinessRules';
+    // if (importPath.includes('entities')) return 'enterpriseBusinessRules';
+    if (importPath.includes('entity') || importPath.includes('entities')) return 'enterpriseBusinessRules';
     if (importPath.includes('accessinterface'))
       return 'applicationBusinessRules'; // must be verified before 'dataAccess'
     if (importPath.includes('access')) return 'frameworksAndDrivers';
@@ -446,7 +452,6 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
       ...this.buildFileStorageList(this.internalFilePaths),
       ...this.buildFileStorageList(this.externalFilePaths),
     ];
-
     const nodes: NodeStorage[] = this.buildNodeStorageList(files);
     const edges: EdgeStorage[] = this.buildEdgeStorageList();
 

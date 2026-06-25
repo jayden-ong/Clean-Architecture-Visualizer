@@ -38,7 +38,6 @@ export class GetViolationsInteractor implements GetViolationsInputBoundary {
 
     const useCase = this.db.getUseCaseById(interactionId);
     if (!useCase) return undefined;
-
     const violations: ViolationEntry[] = await Promise.all(
       useCase.violationEdges.map(async ([from, to], index) => {
         const edgeId = `${from}->${to}`;
@@ -64,7 +63,6 @@ export class GetViolationsInteractor implements GetViolationsInputBoundary {
         };
       })
     );
-
     this.outputData.setOutputData(violations);
   }
 
@@ -85,7 +83,9 @@ export class GetViolationsInteractor implements GetViolationsInputBoundary {
         (n) =>
           (n.type === from || n.type === to) &&
           n.filePath !== undefined &&
-          fileKeySet.has(n.filePath)
+          // fileKeySet.has(n.filePath)
+          ((n.filePath.split('/').length > 0 ? fileKeySet.has(n.filePath.split('/').at(-1) as string): false) ||
+          fileKeySet.has(n.filePath))
       )
       .map((n) => n.id);
   }
@@ -107,7 +107,9 @@ export class GetViolationsInteractor implements GetViolationsInputBoundary {
         (n) =>
           n.type === from &&
           n.filePath !== undefined &&
-          fileKeySet.has(n.filePath)
+          ((n.filePath.split('/').length > 0 ? fileKeySet.has(n.filePath.split('/').at(-1) as string): false) ||
+          fileKeySet.has(n.filePath))
+          // fileKeySet.has(n.filePath)
       );
 
     if (!matchingNode?.filePath) return undefined;
