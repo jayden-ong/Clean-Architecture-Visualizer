@@ -1,7 +1,7 @@
 export class CreateFeatureOutputData {
-    constructor(private readonly feature : string) {}
+  constructor(private readonly feature: string) {}
 
-    getFeature() : string {
-        return this.feature;
-    }
+  getFeature(): string {
+    return this.feature;
+  }
 }

@@ -21,10 +21,17 @@ export class FileAccess implements FileAccessInterface {
       // Extract all of the features in the features directory
       const allFeatures = await fs.readdir(featuresPath, {
         withFileTypes: true,
-      })
-      const allFeaturePaths = allFeatures.filter((e) => e.isDirectory()).map((e) => e.name).map((featureName) => path.join(featuresPath, featureName));
-      const allFeatureContents = await Promise.all(allFeaturePaths
-        .map(async (featurePath) => await fs.readdir(featurePath, {withFileTypes: true})));
+      });
+      const allFeaturePaths = allFeatures
+        .filter((e) => e.isDirectory())
+        .map((e) => e.name)
+        .map((featureName) => path.join(featuresPath, featureName));
+      const allFeatureContents = await Promise.all(
+        allFeaturePaths.map(
+          async (featurePath) =>
+            await fs.readdir(featurePath, { withFileTypes: true })
+        )
+      );
       return allFeatureContents
         .flat()
         .filter((e) => e.isDirectory())

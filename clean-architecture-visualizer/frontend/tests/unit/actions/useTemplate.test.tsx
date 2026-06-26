@@ -2,7 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { QueryClient } from '@tanstack/react-query';
 import { renderHook, waitFor } from '../../test-utils';
-import { useGenerateProject, useGenerateModuleProject, useCreateUseCase, useCreateFeature, useCreateModuleUseCase } from '@/actions/useTemplate';
+import {
+  useGenerateProject,
+  useGenerateModuleProject,
+  useCreateUseCase,
+  useCreateFeature,
+  useCreateModuleUseCase,
+} from '@/actions/useTemplate';
 import { server } from '@/mocks/server';
 
 describe('Template Hooks', () => {
@@ -120,7 +126,10 @@ describe('Template Hooks', () => {
     server.use(
       http.post('*/api/template/module_add/feature1/usecase1', () => {
         return HttpResponse.json(
-          { message: "Use case 'usecase1' created successfully in feature 'feature1'" },
+          {
+            message:
+              "Use case 'usecase1' created successfully in feature 'feature1'",
+          },
           { status: 201 }
         );
       })
@@ -128,7 +137,7 @@ describe('Template Hooks', () => {
 
     const { result } = renderHook(() => useCreateModuleUseCase());
 
-    result.current.mutate({featureName: 'feature1', useCaseName: 'usecase1'});
+    result.current.mutate({ featureName: 'feature1', useCaseName: 'usecase1' });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.message).toBe(

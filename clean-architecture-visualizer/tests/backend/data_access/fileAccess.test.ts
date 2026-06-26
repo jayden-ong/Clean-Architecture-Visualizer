@@ -155,11 +155,11 @@ describe('getUseCases functionality', () => {
   it('Gets all use cases when packaged by module.', async () => {
     // We want to make sure that when we get use cases, it finds the src and features directories
     mockReaddir
-    .mockResolvedValueOnce([mockDir('src')] as any)
-    .mockResolvedValueOnce([mockDir('features')] as any)
-    .mockResolvedValueOnce([mockDir('feature1'), mockDir('feature2')] as any)
-    .mockResolvedValueOnce([mockDir('usecase1')] as any)
-    .mockResolvedValueOnce([mockDir('usecase2')] as any);
+      .mockResolvedValueOnce([mockDir('src')] as any)
+      .mockResolvedValueOnce([mockDir('features')] as any)
+      .mockResolvedValueOnce([mockDir('feature1'), mockDir('feature2')] as any)
+      .mockResolvedValueOnce([mockDir('usecase1')] as any)
+      .mockResolvedValueOnce([mockDir('usecase2')] as any);
 
     const result = await fileAccess.getUseCases();
     expect(result).toEqual(['usecase1', 'usecase2']);
@@ -168,11 +168,11 @@ describe('getUseCases functionality', () => {
   it('Gets all use cases when packaged by module (even if there is a use_case directory).', async () => {
     // We want to make sure that when we get use cases, it finds the src and features directories
     mockReaddir
-    .mockResolvedValueOnce([mockDir('src')] as any)
-    .mockResolvedValueOnce([mockDir('use_case')] as any)
-    .mockResolvedValueOnce([mockDir('features')] as any)
-    .mockResolvedValueOnce([mockDir('feature1')] as any)
-    .mockResolvedValueOnce([mockDir('usecase1')] as any);
+      .mockResolvedValueOnce([mockDir('src')] as any)
+      .mockResolvedValueOnce([mockDir('use_case')] as any)
+      .mockResolvedValueOnce([mockDir('features')] as any)
+      .mockResolvedValueOnce([mockDir('feature1')] as any)
+      .mockResolvedValueOnce([mockDir('usecase1')] as any);
 
     const result = await fileAccess.getUseCases();
     expect(result).toEqual(['usecase1']);
@@ -180,9 +180,9 @@ describe('getUseCases functionality', () => {
 
   it('Returns no use cases when packaged by module when there are no features.', async () => {
     mockReaddir
-    .mockResolvedValueOnce([mockDir('src')] as any)
-    .mockResolvedValueOnce([mockDir('features')] as any)
-    .mockResolvedValueOnce([] as any);
+      .mockResolvedValueOnce([mockDir('src')] as any)
+      .mockResolvedValueOnce([mockDir('features')] as any)
+      .mockResolvedValueOnce([] as any);
 
     const result = await fileAccess.getUseCases();
     expect(result).toEqual([]);
@@ -190,10 +190,10 @@ describe('getUseCases functionality', () => {
 
   it('Returns no use cases when packaged by module when there are no use cases.', async () => {
     mockReaddir
-    .mockResolvedValueOnce([mockDir('src')] as any)
-    .mockResolvedValueOnce([mockDir('features')] as any)
-    .mockResolvedValueOnce([mockDir('feature1')] as any)
-    .mockResolvedValueOnce([] as any);
+      .mockResolvedValueOnce([mockDir('src')] as any)
+      .mockResolvedValueOnce([mockDir('features')] as any)
+      .mockResolvedValueOnce([mockDir('feature1')] as any)
+      .mockResolvedValueOnce([] as any);
 
     const result = await fileAccess.getUseCases();
     expect(result).toEqual([]);
@@ -201,10 +201,10 @@ describe('getUseCases functionality', () => {
 
   it('Gets all use cases when packaged by layer.', async () => {
     mockReaddir
-    .mockResolvedValueOnce([mockDir('src')] as any)
-    .mockResolvedValueOnce([] as any)
-    .mockResolvedValueOnce([mockDir('use_case')] as any)
-    .mockResolvedValueOnce([mockDir('usecase1'), mockDir('usecase2')] as any);
+      .mockResolvedValueOnce([mockDir('src')] as any)
+      .mockResolvedValueOnce([] as any)
+      .mockResolvedValueOnce([mockDir('use_case')] as any)
+      .mockResolvedValueOnce([mockDir('usecase1'), mockDir('usecase2')] as any);
 
     const result = await fileAccess.getUseCases();
     expect(result).toEqual(['usecase1', 'usecase2']);
@@ -212,18 +212,17 @@ describe('getUseCases functionality', () => {
 
   it('Returns no use cases when packaged by layer.', async () => {
     mockReaddir
-    .mockResolvedValueOnce([mockDir('src')] as any)
-    .mockResolvedValueOnce([] as any)
-    .mockResolvedValueOnce([mockDir('use_case')] as any)
-    .mockResolvedValueOnce([] as any);
+      .mockResolvedValueOnce([mockDir('src')] as any)
+      .mockResolvedValueOnce([] as any)
+      .mockResolvedValueOnce([mockDir('use_case')] as any)
+      .mockResolvedValueOnce([] as any);
 
     const result = await fileAccess.getUseCases();
     expect(result).toEqual([]);
   });
 
   it('Returns no use cases if src directory does not exist.', async () => {
-    mockReaddir
-    .mockResolvedValueOnce([] as any);
+    mockReaddir.mockResolvedValueOnce([] as any);
 
     const result = await fileAccess.getUseCases();
     expect(result).toEqual([]);
@@ -231,12 +230,11 @@ describe('getUseCases functionality', () => {
 
   it('Returns no use cases if features and use_case directory does not exist.', async () => {
     mockReaddir
-    .mockResolvedValueOnce([mockDir('src')] as any)
-    .mockResolvedValueOnce([] as any)
-    .mockResolvedValueOnce([] as any);
+      .mockResolvedValueOnce([mockDir('src')] as any)
+      .mockResolvedValueOnce([] as any)
+      .mockResolvedValueOnce([] as any);
 
     const result = await fileAccess.getUseCases();
     expect(result).toEqual([]);
   });
-  
 });

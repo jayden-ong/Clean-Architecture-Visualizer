@@ -1,7 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '@/mocks/server';
-import { generateProject, generateModuleProject, createUseCase, createFeature, createModuleUseCase } from '@/api/template.api';
+import {
+  generateProject,
+  generateModuleProject,
+  createUseCase,
+  createFeature,
+  createModuleUseCase,
+} from '@/api/template.api';
 
 describe('Template API', () => {
   it('generateProject posts to /template/generate and returns the response data', async () => {
@@ -78,8 +84,9 @@ describe('Template API', () => {
     };
 
     server.use(
-      http.post(`*/api/template/module_add/${encodedFeatureName}/${encodedUseCaseName}`, () =>
-        HttpResponse.json(mockData, { status: 201 })
+      http.post(
+        `*/api/template/module_add/${encodedFeatureName}/${encodedUseCaseName}`,
+        () => HttpResponse.json(mockData, { status: 201 })
       )
     );
 

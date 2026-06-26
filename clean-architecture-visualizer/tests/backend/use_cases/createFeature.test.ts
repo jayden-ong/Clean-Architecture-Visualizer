@@ -15,7 +15,7 @@ describe('CreateFeatureInteractor', () => {
       getCurrentPath: jest.fn<any>(),
       bfsFindDir: jest.fn<any>(),
       exists: jest.fn<any>(),
-      createDirectory: jest.fn<any>()
+      createDirectory: jest.fn<any>(),
     } as any;
 
     mockPresenter = {
@@ -32,13 +32,13 @@ describe('CreateFeatureInteractor', () => {
     mockFileAccess.exists.mockResolvedValue(false);
     const inputData = new CreateFeatureInputData('new_feature');
     await interactor.execute(inputData);
-    
+
     expect(mockFileAccess.createDirectory).toHaveBeenCalledWith(
-        '/root/src/features/new_feature'
+      '/root/src/features/new_feature'
     );
 
     expect(mockPresenter.showSuccessView).toHaveBeenCalledWith(
-        new CreateFeatureOutputData('new_feature')
+      new CreateFeatureOutputData('new_feature')
     );
     expect(mockPresenter.showFailView).not.toHaveBeenCalled();
   });
@@ -49,13 +49,13 @@ describe('CreateFeatureInteractor', () => {
     mockFileAccess.exists.mockResolvedValue(false);
     const inputData = new CreateFeatureInputData('new feature with spaces');
     await interactor.execute(inputData);
-    
+
     expect(mockFileAccess.createDirectory).toHaveBeenCalledWith(
-        '/root/src/features/newfeaturewithspaces'
+      '/root/src/features/newfeaturewithspaces'
     );
 
     expect(mockPresenter.showSuccessView).toHaveBeenCalledWith(
-        new CreateFeatureOutputData('newfeaturewithspaces')
+      new CreateFeatureOutputData('newfeaturewithspaces')
     );
     expect(mockPresenter.showFailView).not.toHaveBeenCalled();
   });
@@ -82,7 +82,9 @@ describe('CreateFeatureInteractor', () => {
     mockFileAccess.getCurrentPath.mockResolvedValue('/root/src');
     mockFileAccess.bfsFindDir.mockResolvedValue('/root/src/features');
     mockFileAccess.exists.mockResolvedValue(true);
-    mockFileAccess.createDirectory.mockRejectedValue(new Error('Failed to create directory.'));
+    mockFileAccess.createDirectory.mockRejectedValue(
+      new Error('Failed to create directory.')
+    );
     const inputData = new CreateFeatureInputData('new_feature');
     await interactor.execute(inputData);
     expect(mockPresenter.showSuccessView).not.toHaveBeenCalled();

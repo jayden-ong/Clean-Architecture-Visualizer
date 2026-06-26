@@ -207,7 +207,9 @@ export class AppBuilder {
     ) => InitModuleProjectController
   ): this {
     if (!this.initModuleProjectInteractor) {
-      throw new Error('InitModuleProjectInteractor must be built before controller');
+      throw new Error(
+        'InitModuleProjectInteractor must be built before controller'
+      );
     }
 
     this.initModuleProjectController = new ControllerClass(
@@ -300,7 +302,9 @@ export class AppBuilder {
 
   runInitModuleProject() {
     this.initModuleProjectController?.execute();
-    console.log(chalk.green('Your project packaged by module has been initialized.'));
+    console.log(
+      chalk.green('Your project packaged by module has been initialized.')
+    );
   }
 
   runCreateUseCase(name: string) {

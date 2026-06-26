@@ -43,7 +43,6 @@ const app = new AppBuilder()
   .buildInitModuleProjectController(InitModuleProjectController)
   .buildCreateModuleUseCaseController(CreateModuleUseCaseController);
 
-
 program.version(packageJson.version);
 
 program
@@ -73,7 +72,9 @@ program
 
 program
   .command('module_init')
-  .description('Create the template for a new CSC207 project, packaged by module.')
+  .description(
+    'Create the template for a new CSC207 project, packaged by module.'
+  )
   .action(async () => {
     app.runInitModuleProject();
   });
@@ -88,16 +89,16 @@ program
 program
   .command('module_usecase <feature> <usecase>')
   .description('Add a new use case to a specified feature.')
-  .action(async (feature : string, usecase : string) => {
+  .action(async (feature: string, usecase: string) => {
     app.runCreateModuleUseCase(feature, usecase);
-  }); 
-  
+  });
+
 program
   .command('feature <feature>')
   .description('Add a new feature to the directory of features.')
   .action(async (feature: string) => {
     app.runCreateFeature(feature);
-  })
+  });
 
 program
   .command('end')

@@ -70,22 +70,22 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
   private async buildFilePaths(): Promise<void> {
     // Must now account for packaging by module -- if features exists, packaging by module
     const currPath = process.cwd();
-    if(await this.fileAccess.bfsFindDir(currPath, 'features')) {
+    if (await this.fileAccess.bfsFindDir(currPath, 'features')) {
       await Promise.all([
-      this.fileAccess.getFilePaths('features', this.internalFilePaths),
-      ...this.externalDirectories.map((dir) =>
-        this.fileAccess.getFilePaths(dir, this.externalFilePaths)
-      ),
-    ]);
+        this.fileAccess.getFilePaths('features', this.internalFilePaths),
+        ...this.externalDirectories.map((dir) =>
+          this.fileAccess.getFilePaths(dir, this.externalFilePaths)
+        ),
+      ]);
     } else {
       await Promise.all([
-      ...this.internalDirectories.map((dir) =>
-        this.fileAccess.getFilePaths(dir, this.internalFilePaths)
-      ),
-      ...this.externalDirectories.map((dir) =>
-        this.fileAccess.getFilePaths(dir, this.externalFilePaths)
-      ),
-    ]);
+        ...this.internalDirectories.map((dir) =>
+          this.fileAccess.getFilePaths(dir, this.internalFilePaths)
+        ),
+        ...this.externalDirectories.map((dir) =>
+          this.fileAccess.getFilePaths(dir, this.externalFilePaths)
+        ),
+      ]);
     }
   }
 
@@ -144,9 +144,15 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
               this.crossUseCaseEdges[useCaseIndex].push([fromNode, toNode]);
             } else {
               graph.setNodeNeighbour(fromNode, toNode);
-              const modifiedImportPath = importPath.length > 0 && importPath.at(-1) === ";" ? importPath.slice(0, -1) : importPath;
-              if(this.externalFilePaths.has(modifiedImportPath)){
-                graph.addFile(modifiedImportPath, this.externalFilePaths.get(modifiedImportPath) as string);
+              const modifiedImportPath =
+                importPath.length > 0 && importPath.at(-1) === ';'
+                  ? importPath.slice(0, -1)
+                  : importPath;
+              if (this.externalFilePaths.has(modifiedImportPath)) {
+                graph.addFile(
+                  modifiedImportPath,
+                  this.externalFilePaths.get(modifiedImportPath) as string
+                );
               }
             }
           }
@@ -220,7 +226,8 @@ export class GraphVerificationInteractor implements GraphVerificationInputBounda
     if (importPath.includes('view')) return 'frameworksAndDrivers';
     if (importPath.includes('database')) return 'frameworksAndDrivers';
     // if (importPath.includes('entities')) return 'enterpriseBusinessRules';
-    if (importPath.includes('entity') || importPath.includes('entities')) return 'enterpriseBusinessRules';
+    if (importPath.includes('entity') || importPath.includes('entities'))
+      return 'enterpriseBusinessRules';
     if (importPath.includes('accessinterface'))
       return 'applicationBusinessRules'; // must be verified before 'dataAccess'
     if (importPath.includes('access')) return 'frameworksAndDrivers';

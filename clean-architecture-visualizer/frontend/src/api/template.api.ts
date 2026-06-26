@@ -36,19 +36,22 @@ export const createUseCase = async (useCaseName: string) => {
  * @param featureName The name of the feature.
  */
 export const createFeature = async (featureName: string) => {
-  const { data } = await apiClient.post<{ message: string}>(
+  const { data } = await apiClient.post<{ message: string }>(
     `/template/module_add/${encodeURIComponent(featureName)}`
   );
   return data;
-}
+};
 
 /**
  * Creates a new use case in the specified CA directory.
  * @param featureName The name of the feature.
  */
-export const createModuleUseCase = async (featureName: string, useCaseName: string) => {
-  const { data } = await apiClient.post<{ message: string}>(
+export const createModuleUseCase = async (
+  featureName: string,
+  useCaseName: string
+) => {
+  const { data } = await apiClient.post<{ message: string }>(
     `/template/module_add/${encodeURIComponent(featureName)}/${encodeURIComponent(useCaseName)}`
   );
   return data;
-}
+};

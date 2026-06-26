@@ -1,5 +1,5 @@
-import type { InitModuleProjectOutputBoundary } from "../../use_case/initModuleProject/initModuleProjectOutputBoundary.js";
-import type { InitModuleProjectOutputData } from "../../use_case/initModuleProject/initModuleProjectOutputData.js";
+import type { InitModuleProjectOutputBoundary } from '../../use_case/initModuleProject/initModuleProjectOutputBoundary.js';
+import type { InitModuleProjectOutputData } from '../../use_case/initModuleProject/initModuleProjectOutputData.js';
 
 export class InitModuleProjectPresenter implements InitModuleProjectOutputBoundary {
   constructor(private readonly outputData: InitModuleProjectOutputData) {}
