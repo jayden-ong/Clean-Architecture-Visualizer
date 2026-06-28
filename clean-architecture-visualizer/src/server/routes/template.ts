@@ -107,11 +107,9 @@ router.post(
     const result = presenter.getError();
 
     if (result) {
-      res
-        .status(404)
-        .json({
-          error: `Could not make use case '${req.params.useCaseName}' in feature '${req.params.featureName}'`,
-        });
+      res.status(404).json({
+        error: `Could not make use case '${req.params.useCaseName}' in feature '${req.params.featureName}'`,
+      });
       return;
     }
 
